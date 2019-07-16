@@ -1,7 +1,6 @@
 using System;
-using Illarion.Client.Common;
 
-namespace Illarion.Client
+namespace Illarion.Client.Common
 {
     public static class Game 
     {
@@ -10,6 +9,17 @@ namespace Illarion.Client
         private static IFileSystem _fileSystem;
         private static ILogger _logger;
         private static IConfig _config;
+
+        public static void Initialize(IFileSystem fileSystem, ILogger logger, IConfig config)
+        {
+            if (_initialized) throw new InvalidOperationException("Game already initialized!");
+
+            _fileSystem = fileSystem;
+            _logger = logger;
+            _config = config;
+
+            _initialized = true;
+        }
 
         public static IFileSystem FileSystem
         {

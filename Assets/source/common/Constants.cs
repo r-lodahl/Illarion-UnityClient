@@ -4,35 +4,39 @@ namespace Illarion.Client.Common
     {
         public static class UserData
         {
-            public const string TilesetPath = "";
-            public const string VersionPath = "";
-            public const string MapPath = "";
-            public const string ServerMapPath = "";
+            // Internal Path
+            public const string TilesetPath = "tiles/";
+
+            public const string VersionPath = "map.version";
+            public const string MapPath = "map/";
+            public const string ServerMapPath = "Illarion-Map/";
         }
 
         public static class Update 
         {
-            public const string ServerAddress = "";
-            public const string MapVersionEndpoint = "";
-            public const string MapDataEndpoint = "";
+            public const string ServerAddress = "https://c107-243.cloud.gwdg.de/";
+            public const string MapVersionEndpoint = "api/map/version";
+            public const string MapDataEndpoint = "api/map/zipball";
             
-            public const string TileTablePath = "";
-            public const string TileFileName = "";
-            public const string OverlayTablePath = "";
-            public const string OverlayFileName = "";
-            public const int TileNameColumn = 0;
-            public const int TileIdColumn = 0;
-            public const int OverlayNameColumn = 0;
-            public const int OverlayIdColumn = 0;
+            // Internal Path
+            public const string TileTablePath = "tables/";
+            public const string TileFileName = "Tiles.tbl";
+            public const string OverlayTablePath = "tables/";
+            public const string OverlayFileName = "Overlay.tbl";
+
+            public const int TileNameColumn = 3;
+            public const int TileIdColumn = 9;
+            public const int OverlayNameColumn = 3;
+            public const int OverlayIdColumn = 2;
         }
 
         public static class Tile
         {
             public const int OverlayFactor = 1000;
             
-            public const int ShapeIdMask = 0;
-            public const int OverlayIdMask = 0;
-            public const int BaseIdMask = 0;
+            public const int ShapeIdMask = 0xFC00;
+            public const int OverlayIdMask = 0x03E0;
+            public const int BaseIdMask = 0x001F;
         }
 
         public static class Map

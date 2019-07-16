@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Illarion.Client.Common;
 using Newtonsoft.Json;
+using UnityEngine;
+using UnityEngine.Tilemaps;
 
 namespace Illarion.Client.Update
 {
@@ -29,9 +31,9 @@ namespace Illarion.Client.Update
 
             if (!await DownloadMapFiles()) return false;
 
-            var tableConverter = new TileTableReader();
-            var tileDictionary = tableConverter.CreateTileMapping();
-            var overlayDictionary = tableConverter.CreateOverlayMapping();
+            var tileTableReader = new TileTableReader(GetTileNameDictionary());
+            var tileDictionary = tileTableReader.CreateTileMapping();
+            var overlayDictionary = tileTableReader.CreateOverlayMapping();
 
             var mapChunkBuilder = new MapChunkBuilder(tileDictionary, overlayDictionary);
             mapChunkBuilder.Create();
@@ -92,6 +94,19 @@ namespace Illarion.Client.Update
             }
 
             return true;
+        }
+
+        private Dictionary<string, int> GetTileNameDictionary() 
+        {
+            var tiles = Resources.LoadAll<Tile>(Constants.UserData.TilesetPath);
+            var tileNameToIndex = new Dictionary<string, int>(tiles.Length);
+
+            for (int i = 0; i < tiles.Length; i++)
+            {
+                tileNameToIndex.Add(tiles[i].name, i);
+            }
+
+            return tileNameToIndex;
         }
 
         private void UpdateVersion(string version)

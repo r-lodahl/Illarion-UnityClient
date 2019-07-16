@@ -11,17 +11,10 @@ namespace Illarion.Client.Update
     public class TileTableReader {
 
         private Dictionary<string, int> tileNameToIndex;
-        private Tile[] tiles;
-
-        public TileTableReader()
+        
+        public TileTableReader(Dictionary<string, int> tileNameToIndex)
         {
-            tiles = Resources.LoadAll<Tile>("tiles");
-            tileNameToIndex = new Dictionary<string, int>(tiles.Length);
-
-            for (int i = 0; i < tiles.Length; i++)
-            {
-                tileNameToIndex.Add(tiles[i].name, i);
-            }
+            this.tileNameToIndex = tileNameToIndex;
         }
 
         public Dictionary<int,int[]> CreateTileMapping()
