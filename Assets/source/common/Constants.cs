@@ -47,6 +47,7 @@ namespace Illarion.Client.Common
         public static class Map
         {
             public const int Chunksize = 20;
+            public const int VisibleLayers = 10;
         }
     }
 }

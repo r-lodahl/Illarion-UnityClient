@@ -61,11 +61,13 @@
      <Compile Include="Assets\source\common\IConfig.cs" />
      <Compile Include="Assets\source\common\IFileSystem.cs" />
      <Compile Include="Assets\source\common\ILogger.cs" />
+     <Compile Include="Assets\source\common\IMovementSupplier.cs" />
      <Compile Include="Assets\source\common\Language.cs" />
      <Compile Include="Assets\source\common\Unzip.cs" />
      <Compile Include="Assets\source\common\Vector2i.cs" />
      <Compile Include="Assets\source\common\Vector3i.cs" />
      <Compile Include="Assets\source\map\Chunk.cs" />
+     <Compile Include="Assets\source\map\ChunkLoader.cs" />
      <Compile Include="Assets\source\map\MapObject.cs" />
      <Compile Include="Assets\source\unity\common\Config.cs" />
      <Compile Include="Assets\source\unity\common\FileSystem.cs" />
