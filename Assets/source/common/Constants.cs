@@ -39,6 +39,11 @@ namespace Illarion.Client.Common
             public const int BaseIdMask = 0x001F;
         }
 
+        public static class Scene
+        {
+            public const int Map = 0;
+        }
+
         public static class Map
         {
             public const int Chunksize = 20;
