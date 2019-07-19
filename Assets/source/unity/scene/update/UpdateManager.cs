@@ -16,23 +16,27 @@ namespace Illarion.Client.Unity.Scene.Update
         
         private async void Awake()
         {
+            QualitySettings.vSyncCount = 1;
+
             Game.Initialize(
                 new FileSystem(Application.persistentDataPath),
                 new Logger(),
                 new Config()
             );
 
-            var updater = new ClientUpdater();
+            updater = new ClientUpdater();
 
             bool mapUpdateSuccess = await MapUpdate(1, 3);
 
             if (mapUpdateSuccess)
             {
-                await SceneManager.LoadSceneAsync(Constants.Scene.Map, LoadSceneMode.Single);
+                //await SceneManager.LoadSceneAsync(Constants.Scene.Map, LoadSceneMode.Single);
+                Debug.Log("Success");
             }
             else
             {
                 // Change GUI
+                Debug.Log("Fail");
             }
         }
 

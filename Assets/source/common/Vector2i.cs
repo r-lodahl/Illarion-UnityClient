@@ -1,5 +1,8 @@
+using System;
+
 namespace Illarion.Client.Common
 {
+    [Serializable]
     public struct Vector2i
     {
         public readonly int x;

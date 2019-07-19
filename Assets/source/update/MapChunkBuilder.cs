@@ -39,7 +39,7 @@ namespace Illarion.Client.Update
                 String.Concat(Game.FileSystem.UserDirectory, Constants.UserData.ServerMapPath),
                 "*.tiles.txt",
                 SearchOption.AllDirectories);
-			
+                
             int worldMinX = int.MaxValue;
             int worldMinY = int.MaxValue;
             int worldMaxX = int.MinValue;
@@ -77,6 +77,8 @@ namespace Illarion.Client.Update
             List<RawMap> usedMaps = new List<RawMap>();
             Dictionary<Vector3i, MapObject[]> usedItems = new Dictionary<Vector3i, MapObject[]>();
             Dictionary<Vector3i, Vector3i> usedWarps = new Dictionary<Vector3i, Vector3i>();
+
+            
 
             foreach (var layerMaps in worldMapInLayers) 
             {
@@ -185,7 +187,7 @@ namespace Illarion.Client.Update
         private bool CheckOverlap(int topLeftX1, int topLeftY1, int bottomRightX1, int bottomRightY1, int topLeftX2, int topLeftY2, int bottomRightX2, int bottomRightY2) 
         {
             if (topLeftX1 > bottomRightX2 || topLeftX2 > bottomRightX1) return false;
-            if (topLeftY1 < bottomRightY2 || topLeftY2 < bottomRightY1) return false;
+            if (bottomRightY2 < topLeftY1 || bottomRightY1 < topLeftY2) return false;
             return true;
         }
 

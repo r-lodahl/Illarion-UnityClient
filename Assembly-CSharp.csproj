@@ -72,6 +72,9 @@
      <Compile Include="Assets\source\unity\common\Config.cs" />
      <Compile Include="Assets\source\unity\common\FileSystem.cs" />
      <Compile Include="Assets\source\unity\common\Logger.cs" />
+     <Compile Include="Assets\source\unity\scene\ingame\GameManager.cs" />
+     <Compile Include="Assets\source\unity\scene\ingame\IsometricLayeredTilemap.cs" />
+     <Compile Include="Assets\source\unity\scene\ingame\Player.cs" />
      <Compile Include="Assets\source\unity\scene\update\UpdateManager.cs" />
      <Compile Include="Assets\source\update\ClientUpdater.cs" />
      <Compile Include="Assets\source\update\MapChunkBuilder.cs" />
@@ -79,10 +82,30 @@
      <Compile Include="Assets\source\update\TileTableReader.cs" />
      <Compile Include="Assets\TileManager.cs" />
      <None Include="Assets\libs\NewtonsoftJson\readme.txt" />
+     <None Include="Assets\libs\TextMesh Pro\Resources\Shaders\TMP_SDF-Surface-Mobile.shader" />
+     <None Include="Assets\libs\TextMesh Pro\Resources\LineBreaking Leading Characters.txt" />
+     <None Include="Assets\libs\TextMesh Pro\Resources\Shaders\TMPro_Properties.cginc" />
      <None Include="Assets\libs\AwaitExtensions\Code\AwaitExtensions.xml" />
      <None Include="Assets\libs\NewtonsoftJson\license.txt" />
+     <None Include="Assets\libs\TextMesh Pro\Resources\Shaders\TMP_Bitmap-Custom-Atlas.shader" />
      <None Include="Assets\libs\NewtonsoftJson\Newtonsoft.Json.xml" />
-     <None Include="Assets\codeandweb.com\Readme.txt" />
+     <None Include="Assets\libs\TextMesh Pro\Resources\LineBreaking Following Characters.txt" />
+     <None Include="Assets\libs\TextMesh Pro\Sprites\EmojiOne Attribution.txt" />
+     <None Include="Assets\libs\TextMesh Pro\Resources\Shaders\TMP_SDF-Mobile Masking.shader" />
+     <None Include="Assets\libs\TextMesh Pro\Resources\Shaders\TMP_Bitmap-Mobile.shader" />
+     <None Include="Assets\Resources\tables\Tiles.txt" />
+     <None Include="Assets\libs\TextMesh Pro\Resources\Shaders\TMP_SDF Overlay.shader" />
+     <None Include="Assets\libs\TextMesh Pro\Fonts\LiberationSans - OFL.txt" />
+     <None Include="Assets\libs\TextMesh Pro\Resources\Shaders\TMPro_Surface.cginc" />
+     <None Include="Assets\libs\TextMesh Pro\Resources\Shaders\TMP_SDF-Mobile Overlay.shader" />
+     <None Include="Assets\libs\TextMesh Pro\Resources\Shaders\TMP_Bitmap.shader" />
+     <None Include="Assets\libs\TextMesh Pro\Resources\Shaders\TMPro.cginc" />
+     <None Include="Assets\libs\TextMesh Pro\Resources\Shaders\TMP_SDF.shader" />
+     <None Include="Assets\libs\TextMesh Pro\Resources\Shaders\TMP_SDF-Mobile.shader" />
+     <None Include="Assets\libs\codeandweb.com\Readme.txt" />
+     <None Include="Assets\libs\TextMesh Pro\Resources\Shaders\TMP_Sprite.shader" />
+     <None Include="Assets\libs\TextMesh Pro\Resources\Shaders\TMP_SDF-Surface.shader" />
+     <None Include="Assets\Resources\tables\Overlays.txt" />
  <Reference Include="Unity.Timeline.Editor">
  <HintPath>E:/Illarion/Illarion-Client/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
  </Reference>
@@ -287,6 +310,9 @@
  <Reference Include="nunit.framework">
  <HintPath>C:/Program Files/Unity/Hub/Editor/2019.1.5f1/Editor/Data/UnityExtensions/Unity/TestRunner/net35/unity-custom/nunit.framework.dll</HintPath>
  </Reference>
+ <Reference Include="AwaitExtensions">
+ <HintPath>E:/Illarion/Illarion-Client/Assets/libs/AwaitExtensions/Code/AwaitExtensions.dll</HintPath>
+ </Reference>
  <Reference Include="Newtonsoft.Json">
  <HintPath>E:/Illarion/Illarion-Client/Assets/libs/NewtonsoftJson/Newtonsoft.Json.dll</HintPath>
  </Reference>
@@ -298,9 +324,6 @@
  </Reference>
  <Reference Include="Unity.Analytics.Tracker">
  <HintPath>E:/Illarion/Illarion-Client/Library/PackageCache/com.unity.analytics@3.3.2/Unity.Analytics.Tracker.dll</HintPath>
- </Reference>
- <Reference Include="AwaitExtensions">
- <HintPath>E:/Illarion/Illarion-Client/Assets/libs/AwaitExtensions/Code/AwaitExtensions.dll</HintPath>
  </Reference>
  <Reference Include="netstandard">
  <HintPath>C:/Program Files/Unity/Hub/Editor/2019.1.5f1/Editor/Data/NetStandard/ref/2.0.0/netstandard.dll</HintPath>

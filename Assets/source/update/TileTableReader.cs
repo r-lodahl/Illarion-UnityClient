@@ -50,13 +50,16 @@ namespace Illarion.Client.Update
         * This mapping will be return and saved to disk
         */
         private Dictionary<int,int[]> CreateTileMapping(string tablePath, int nameColumn, int idColumn, string fileName) {
-            if (!File.Exists(tablePath)) throw new FileNotFoundException("Failed opening tile table!");
-            
-            var lineReader = File.ReadLines(tablePath);
+            var tableFile = Resources.Load<TextAsset>(tablePath);
 
+            if (tableFile == null) throw new FileNotFoundException($"Failed opening intern tile table at {tablePath}!");
+            
             Dictionary<int,int[]> resultDic = new Dictionary<int, int[]>();
             
-            foreach (var line in lineReader)
+            using(var lineReader = new StringReader(tableFile.text))
+            {
+            string line;
+            while ((line = lineReader.ReadLine()) != null)
             {
                 if (line.Equals("")) break;
                 if (line.StartsWith("#") || line.StartsWith("/")) continue;
@@ -87,6 +90,7 @@ namespace Illarion.Client.Update
                 int serverId = int.Parse(rowValues[idColumn]);
 
                 resultDic.Add(serverId, localIds);
+            }
             }
 
             BinaryFormatter binaryFormatter = new BinaryFormatter();
