@@ -72,7 +72,7 @@
      <Compile Include="Assets\source\unity\common\Config.cs" />
      <Compile Include="Assets\source\unity\common\FileSystem.cs" />
      <Compile Include="Assets\source\unity\common\Logger.cs" />
-     <Compile Include="Assets\source\unity\scene\ingame\GameManager.cs" />
+     <Compile Include="Assets\source\unity\scene\ingame\IngameManager.cs" />
      <Compile Include="Assets\source\unity\scene\ingame\IsometricLayeredTilemap.cs" />
      <Compile Include="Assets\source\unity\scene\ingame\Player.cs" />
      <Compile Include="Assets\source\unity\scene\update\UpdateManager.cs" />
@@ -126,6 +126,12 @@
  </Reference>
  <Reference Include="Unity.Analytics.DataPrivacy">
  <HintPath>E:/Illarion/Illarion-Client/Library/ScriptAssemblies/Unity.Analytics.DataPrivacy.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.2D.PixelPerfect.Editor">
+ <HintPath>E:/Illarion/Illarion-Client/Library/ScriptAssemblies/Unity.2D.PixelPerfect.Editor.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.2D.PixelPerfect">
+ <HintPath>E:/Illarion/Illarion-Client/Library/ScriptAssemblies/Unity.2D.PixelPerfect.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.AIModule">
  <HintPath>C:/Program Files/Unity/Hub/Editor/2019.1.5f1/Editor/Data/Managed/UnityEngine/UnityEngine.AIModule.dll</HintPath>

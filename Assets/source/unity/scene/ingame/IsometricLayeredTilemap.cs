@@ -28,71 +28,79 @@ namespace Illarion.Client.Unity.Scene.Ingame
 
         private void OnChunkLoaded(object sender, Chunk chunk)
         {
+            if (chunk == null) return;
+
             loadedChunks.Add(chunk);
 
-            for (int layerIndex = 0; layerIndex < chunk.Map.Length; layerIndex++)
+            var applicableLayerIndices = GetApplicableLayerIndices(chunk.Layers);
+
+            for (int xy = 0; xy < chunk.Map.Length; xy++)
             {
-                int layer = chunk.Layers[layerIndex];
+                int x = xy / Constants.Map.Chunksize + chunk.Origin[0];
+                int y = xy % Constants.Map.Chunksize + chunk.Origin[1];
 
-                if (layer > referenceLayer + Constants.Map.VisibleLayers 
-                || layer < referenceLayer - Constants.Map.VisibleLayers) continue;
-
-                var layerMap = chunk.Map[layerIndex];
-
-                for (int xy = 0; xy < layerMap.Length; xy++)
+                foreach (int layerIndex in applicableLayerIndices)
                 {
-                    int x = xy / Constants.Map.Chunksize;
-                    int y = xy % Constants.Map.Chunksize;
+                    UncompressTileId(chunk.Map[xy][layerIndex], out var tileId, out var overlayId);
 
-                    int compressedTileId = layerMap[xy];
-                    int tileId = compressedTileId % Constants.Tile.OverlayFactor;
-                    int overlayId = compressedTileId / Constants.Tile.OverlayFactor;
+                    int layer = chunk.Layers[layerIndex];
 
-                    if (tileId > 0)
-                    {
-                        tilemap.SetTile(
-                            new Vector3Int(x, y, layer * Constants.Map.LayerDrawingFactor),
-                            tiles[tileId]
-                        );
-                    }
-
+                    if (tileId > 0) tilemap.SetTile(new Vector3Int(x, -y, layer * Constants.Map.LayerDrawingFactor), tiles[tileId]);
                     
-                    if (overlayId > 0)
-                    {
-                        tilemap.SetTile(
-                            new Vector3Int(
-                                x,
-                                y,
-                                layer * Constants.Map.LayerDrawingFactor
-                                + Constants.Map.OverlayDrawingAdd),
-                            tiles[overlayId]
-                        );
-                    }
+                    if (overlayId > 0) tilemap.SetTile(new Vector3Int(x - Constants.Map.OverlayCellMinus, 
+                        -y - Constants.Map.OverlayCellMinus, layer * Constants.Map.LayerDrawingFactor
+                        + Constants.Map.OverlayDrawingAdd), tiles[overlayId]);
                 }
             }
         }
 
         private void OnChunkUnloading(object sender, Chunk chunk)
         {
-            for (int layerIndex = 0; layerIndex < chunk.Map.Length; layerIndex++)
+            if (chunk == null) return;
+
+            var applicableLayerIndices = GetApplicableLayerIndices(chunk.Layers);
+
+            for (int xy = 0; xy < chunk.Map.Length; xy++)
             {
-                int layer = chunk.Layers[layerIndex];
+                int x = xy / Constants.Map.Chunksize + chunk.Origin[0];
+                int y = xy % Constants.Map.Chunksize + chunk.Origin[1];
 
-                if (layer > referenceLayer + Constants.Map.VisibleLayers 
-                || layer < referenceLayer - Constants.Map.VisibleLayers) continue;
-
-                var layerMap = chunk.Map[layerIndex];
-
-                for (int xy = 0; xy < layerMap.Length; xy++)
+                foreach (int layerIndex in applicableLayerIndices)
                 {
-                    int x = xy / Constants.Map.Chunksize;
-                    int y = xy % Constants.Map.Chunksize;
+                    UncompressTileId(chunk.Map[xy][layerIndex], out var tileId, out var overlayId);
 
-                    tilemap.SetTile(new Vector3Int(x,y,layer), null);
+                    int layer = chunk.Layers[layerIndex];
+
+                    if (tileId > 0) tilemap.SetTile(new Vector3Int(x, -y, layer * Constants.Map.LayerDrawingFactor), null);
+                    
+                    if (overlayId > 0) tilemap.SetTile(new Vector3Int(x - Constants.Map.OverlayCellMinus, 
+                        -y - Constants.Map.OverlayCellMinus, layer * Constants.Map.LayerDrawingFactor
+                        + Constants.Map.OverlayDrawingAdd), null);
                 }
             }
 
             loadedChunks.Remove(chunk);
+        }
+
+        private int[] GetApplicableLayerIndices(int[] chunkLayers) 
+        {
+            List<int> usedLayersIndices = new List<int>(20);
+            for (int layerIndex = 0; layerIndex < chunkLayers.Length; layerIndex++)
+            {
+                int layer = chunkLayers[layerIndex];
+
+                if (layer > referenceLayer + Constants.Map.VisibleLayers 
+                || layer < referenceLayer - Constants.Map.VisibleLayers) continue;
+
+                usedLayersIndices.Add(layerIndex);
+            }
+            return usedLayersIndices.ToArray();
+        }
+
+        private void UncompressTileId(int compressedId, out int tileId, out int overlayId)
+        {
+            tileId = compressedId % Constants.Tile.OverlayFactor;
+            overlayId = compressedId / Constants.Tile.OverlayFactor;
         }
     }
 }

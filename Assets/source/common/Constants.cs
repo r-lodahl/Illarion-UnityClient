@@ -49,8 +49,11 @@ namespace Illarion.Client.Common
         {
             public const int Chunksize = 20;
             public const int VisibleLayers = 10;
-            public const int LayerDrawingFactor = 2;
-            public const int OverlayDrawingAdd = 1;
+            
+            public const int LayerDrawingFactor = 4;
+
+            public const int OverlayDrawingAdd = 2;
+            public const int OverlayCellMinus = 1;
         }
     }
 }

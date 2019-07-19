@@ -1,9 +1,10 @@
 using System;
+using UnityEngine;
 using Illarion.Client.Common;
 
 namespace Illarion.Client.Unity.Scene.Ingame
 {
-    public class Player : IMovementSupplier
+    public class Player : MonoBehaviour, IMovementSupplier
     {
         public event EventHandler<Vector2i> MovementDone;
         public event EventHandler<int> LayerChanged;
@@ -18,6 +19,56 @@ namespace Illarion.Client.Unity.Scene.Ingame
         {
             EventHandler<int> handler = LayerChanged;
             handler?.Invoke(this, z);
+        }
+
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.A))
+            {
+                if (Input.GetKeyDown(KeyCode.W)) 
+                {
+                    transform.Translate(-0.5f, 0.25f, 0f);
+                    OnMovementDone(0, -1);
+                }
+                else if (Input.GetKeyDown(KeyCode.S))
+                {
+                    transform.Translate(-0.5f, -0.25f, 0f);
+                    OnMovementDone(-1, 0);
+                }
+                else
+                {
+                    transform.Translate(-1f, 0f, 0f);
+                    OnMovementDone(-1, -1);
+                }
+            }
+            else if (Input.GetKeyDown(KeyCode.D))
+            {
+                if (Input.GetKeyDown(KeyCode.W)) 
+                {
+                    transform.Translate(0.5f, 0.25f, 0f);
+                    OnMovementDone(1, 0);
+                }
+                else if (Input.GetKeyDown(KeyCode.S))
+                {
+                    transform.Translate(0.5f, -0.25f, 0f);
+                    OnMovementDone(0, 1);
+                }
+                else
+                {
+                    transform.Translate(1f, 0f, 0f);
+                    OnMovementDone(1, 1);
+                }
+            }
+            else if (Input.GetKeyDown(KeyCode.W))
+            {
+                transform.Translate(0f, 0.5f, 0f);
+                OnMovementDone(1, -1);
+            }
+            else if (Input.GetKeyDown(KeyCode.S))
+            {
+                transform.Translate(0f, -0.5f, 0f);
+                OnMovementDone(-1, 1);
+            }
         }
     }
 }
