@@ -30,8 +30,7 @@ namespace Illarion.Client.Unity.Scene.Update
 
             if (mapUpdateSuccess)
             {
-                //await SceneManager.LoadSceneAsync(Constants.Scene.Map, LoadSceneMode.Single);
-                Debug.Log("Success");
+                await SceneManager.LoadSceneAsync(Constants.Scene.Map, LoadSceneMode.Single);
             }
             else
             {

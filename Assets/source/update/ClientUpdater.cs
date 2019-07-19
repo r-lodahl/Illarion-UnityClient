@@ -22,14 +22,16 @@ namespace Illarion.Client.Update
 
         public async Task<bool> Update() 
         {
-            //string localVersion = GetLocalVersion();
-            //string serverVersion = await GetServerVersion();
-            //if (serverVersion == null) return false;
-            //if (serverVersion.Equals(localVersion)) return true;
+            string localVersion = GetLocalVersion();
+            string serverVersion = await GetServerVersion();
+            if (serverVersion == null) return false;
+            if (serverVersion.Equals(localVersion)) return true;
 
-            //ClearMapFolder();
+            ClearMapFolder();
 
-            //if (!await DownloadMapFiles()) return false;
+            if (!await DownloadMapFiles()) return false;
+
+            await new WaitForUpdate();
 
             var tileTableReader = new TileTableReader(GetTileNameDictionary());
             var tileDictionary = tileTableReader.CreateTileMapping();
@@ -40,9 +42,9 @@ namespace Illarion.Client.Update
             var mapChunkBuilder = new MapChunkBuilder(tileDictionary, overlayDictionary);
             mapChunkBuilder.Create();
 
-            //UpdateVersion(serverVersion);
+            UpdateVersion(serverVersion);
 
-            //RemoveDownloadFolder();
+            RemoveDownloadFolder();
 
             return true;
         }
