@@ -5,7 +5,8 @@ namespace Illarion.Client.Unity.Scene.Ingame
 {
     public class IngameManager : MonoBehaviour
     {
-        [SerializeField] private Player player;
+        
+        [SerializeField] private Player player = null;
 
         private ChunkLoader chunkLoader;
         private IsometricLayeredTilemap tilemap;

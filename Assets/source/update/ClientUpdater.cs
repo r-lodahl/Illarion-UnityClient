@@ -33,13 +33,15 @@ namespace Illarion.Client.Update
 
             await new WaitForUpdate();
 
-            var tileTableReader = new TileTableReader(GetTileNameDictionary());
-            var tileDictionary = tileTableReader.CreateTileMapping();
-            var overlayDictionary = tileTableReader.CreateOverlayMapping();
+            var tableReader = new TableReader(GetTileNameDictionary(), GetItemNameDictionary());
+
+            var tileDictionary = tableReader.CreateTileMapping();
+            var overlayDictionary = tableReader.CreateOverlayMapping();
+            var itemDicitionary = tableReader.CreateItemMapping();
 
             await new WaitForBackgroundThread();
 
-            var mapChunkBuilder = new MapChunkBuilder(tileDictionary, overlayDictionary);
+            var mapChunkBuilder = new MapChunkBuilder(tileDictionary, overlayDictionary, itemDicitionary);
             mapChunkBuilder.Create();
 
             UpdateVersion(serverVersion);
@@ -103,14 +105,25 @@ namespace Illarion.Client.Update
         private Dictionary<string, int> GetTileNameDictionary() 
         {
             var tiles = Resources.LoadAll<Tile>(Constants.UserData.TilesetPath);
-            var tileNameToIndex = new Dictionary<string, int>(tiles.Length);
+            return GetNameDictionary(tiles);
+        }
 
-            for (int i = 0; i < tiles.Length; i++)
+        private Dictionary<string, int> GetItemNameDictionary()
+        {
+            Sprite[] items = Resources.LoadAll<Sprite>(Constants.UserData.ItemsetPath);
+            return GetNameDictionary(items);
+        }
+
+        private Dictionary<string, int> GetNameDictionary(UnityEngine.Object[] objects)
+        {
+            var nameToIndex = new Dictionary<string, int>(objects.Length);
+
+            for (int i = 0; i < objects.Length; i++)
             {
-                tileNameToIndex.Add(tiles[i].name, i);
+                nameToIndex.Add(objects[i].name, i);
             }
 
-            return tileNameToIndex;
+            return nameToIndex;
         }
 
         private void UpdateVersion(string version)

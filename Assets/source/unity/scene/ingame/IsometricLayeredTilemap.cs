@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using Illarion.Client.Unity.Common;
 using Illarion.Client.Common;
 using Illarion.Client.Map;
 
@@ -8,16 +9,23 @@ namespace Illarion.Client.Unity.Scene.Ingame
 {
     public class IsometricLayeredTilemap : MonoBehaviour
     {
-        [SerializeField] private Tilemap tilemap;
+        [SerializeField] private Tilemap tilemap = null;
         
         private int referenceLayer;
         private Tile[] tiles;
+        private Sprite[] sprites;
+        
         private HashSet<Chunk> loadedChunks;
+
+        private SpritePool spritePool;
 
         private void Awake()
         {
             loadedChunks = new HashSet<Chunk>();
+
             tiles = Resources.LoadAll<Tile>(Constants.UserData.TilesetPath);
+
+            sprites = Resources.LoadAll<Sprite>(Constants.UserData.ItemsetPath);
         }
 
         public void RegisterChunkLoader(ChunkLoader chunkLoader)

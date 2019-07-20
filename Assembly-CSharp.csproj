@@ -79,7 +79,7 @@
      <Compile Include="Assets\source\update\ClientUpdater.cs" />
      <Compile Include="Assets\source\update\MapChunkBuilder.cs" />
      <Compile Include="Assets\source\update\RawMap.cs" />
-     <Compile Include="Assets\source\update\TileTableReader.cs" />
+     <Compile Include="Assets\source\update\TableReader.cs" />
      <Compile Include="Assets\TileManager.cs" />
      <None Include="Assets\libs\NewtonsoftJson\readme.txt" />
      <None Include="Assets\libs\TextMesh Pro\Resources\Shaders\TMP_SDF-Surface-Mobile.shader" />
@@ -109,6 +109,9 @@
  <Reference Include="Unity.Timeline.Editor">
  <HintPath>E:/Illarion/Illarion-Client/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
  </Reference>
+ <Reference Include="Unity.2D.PixelPerfect.Editor">
+ <HintPath>E:/Illarion/Illarion-Client/Library/ScriptAssemblies/Unity.2D.PixelPerfect.Editor.dll</HintPath>
+ </Reference>
  <Reference Include="Unity.TextMeshPro.Editor">
  <HintPath>E:/Illarion/Illarion-Client/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
  </Reference>
@@ -121,17 +124,14 @@
  <Reference Include="Unity.CollabProxy.Editor">
  <HintPath>E:/Illarion/Illarion-Client/Library/ScriptAssemblies/Unity.CollabProxy.Editor.dll</HintPath>
  </Reference>
+ <Reference Include="Unity.2D.PixelPerfect">
+ <HintPath>E:/Illarion/Illarion-Client/Library/ScriptAssemblies/Unity.2D.PixelPerfect.dll</HintPath>
+ </Reference>
  <Reference Include="Unity.TextMeshPro">
  <HintPath>E:/Illarion/Illarion-Client/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Analytics.DataPrivacy">
  <HintPath>E:/Illarion/Illarion-Client/Library/ScriptAssemblies/Unity.Analytics.DataPrivacy.dll</HintPath>
- </Reference>
- <Reference Include="Unity.2D.PixelPerfect.Editor">
- <HintPath>E:/Illarion/Illarion-Client/Library/ScriptAssemblies/Unity.2D.PixelPerfect.Editor.dll</HintPath>
- </Reference>
- <Reference Include="Unity.2D.PixelPerfect">
- <HintPath>E:/Illarion/Illarion-Client/Library/ScriptAssemblies/Unity.2D.PixelPerfect.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.AIModule">
  <HintPath>C:/Program Files/Unity/Hub/Editor/2019.1.5f1/Editor/Data/Managed/UnityEngine/UnityEngine.AIModule.dll</HintPath>

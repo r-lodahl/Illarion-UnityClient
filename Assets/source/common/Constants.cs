@@ -6,6 +6,7 @@ namespace Illarion.Client.Common
         {
             // Internal Path
             public const string TilesetPath = "tiles/";
+            public const string ItemsetPath = "items/items";
 
             public const string VersionPath = "/map.version";
             public const string MapPath = "/map/";
@@ -21,14 +22,18 @@ namespace Illarion.Client.Common
             // Internal Path: must be .txt .html .htm .xml .bytes .json .csv .yaml .fnt
             public const string TileTablePath = "tables/Tiles";
             public const string OverlayTablePath = "tables/Overlays";
+            public const string ItemTablePath = "tables/Items";
 
             public const string TileFileName = "/tileMapping.bin";
             public const string OverlayFileName = "/overlayMapping.bin";
+            public const string ItemFileName = "/itemMapping.bin";
 
             public const int TileNameColumn = 3;
             public const int TileIdColumn = 9;
             public const int OverlayNameColumn = 3;
             public const int OverlayIdColumn = 2;
+            public const int ItemNameColumn = 0;
+            public const int ItemIdColumn = 0;
         }
 
         public static class Tile
