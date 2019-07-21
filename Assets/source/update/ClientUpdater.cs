@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -37,11 +38,11 @@ namespace Illarion.Client.Update
 
             var tileDictionary = tableReader.CreateTileMapping();
             var overlayDictionary = tableReader.CreateOverlayMapping();
-            var itemDicitionary = tableReader.CreateItemMapping();
+            var itemDictionary = tableReader.CreateItemMapping();
 
             await new WaitForBackgroundThread();
 
-            var mapChunkBuilder = new MapChunkBuilder(tileDictionary, overlayDictionary, itemDicitionary);
+            var mapChunkBuilder = new MapChunkBuilder(tileDictionary, overlayDictionary, itemDictionary);
             mapChunkBuilder.Create();
 
             UpdateVersion(serverVersion);

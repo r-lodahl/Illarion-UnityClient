@@ -11,6 +11,8 @@ namespace Illarion.Client.Unity.Scene.Ingame
     {
         [SerializeField] private Tilemap tilemap = null;
         
+        [SerializeField] private SpriteRenderer spritePrefab = null;
+
         private int referenceLayer;
         private Tile[] tiles;
         private Sprite[] sprites;
@@ -19,6 +21,8 @@ namespace Illarion.Client.Unity.Scene.Ingame
 
         private SpritePool spritePool;
 
+        private Dictionary<int, MapObjectBase> itemBases;
+
         private void Awake()
         {
             loadedChunks = new HashSet<Chunk>();
@@ -26,6 +30,13 @@ namespace Illarion.Client.Unity.Scene.Ingame
             tiles = Resources.LoadAll<Tile>(Constants.UserData.TilesetPath);
 
             sprites = Resources.LoadAll<Sprite>(Constants.UserData.ItemsetPath);
+            
+            spritePool = new SpritePool(spritePrefab, 2000);
+        }
+
+        public void RegisterItemBases(Dictionary<int, MapObjectBase> itemBases)
+        {
+            this.itemBases = itemBases;
         }
 
         public void RegisterChunkLoader(ChunkLoader chunkLoader)
@@ -58,6 +69,25 @@ namespace Illarion.Client.Unity.Scene.Ingame
                     if (overlayId > 0) tilemap.SetTile(new Vector3Int(x - Constants.Map.OverlayCellMinus, 
                         -y - Constants.Map.OverlayCellMinus, layer * Constants.Map.LayerDrawingFactor
                         + Constants.Map.OverlayDrawingAdd), tiles[overlayId]);
+
+                    if (chunk.Items.TryGetValue(new Vector3i(x, y, layer), out var items)) 
+                    {
+                        foreach (var item in items)
+                        {
+                            var spriteItem = spritePool.Get();
+                            var itemBase = itemBases[item.ObjectId];
+
+                            var position = tilemap.CellToLocal(new Vector3Int(x, -y, 0));
+
+                            position.x += itemBase.OffsetX - 0.5f;
+                            position.y += itemBase.OffsetY - 0.25f;
+
+                            spriteItem.transform.position = position;
+                            spriteItem.sortingOrder = layer * 4 + 1;
+                            spriteItem.sprite = sprites[item.ObjectId];
+                            spriteItem.gameObject.SetActive(true);
+                        }
+                    }
                 }
             }
         }

@@ -1,23 +1,24 @@
-using System;
 using System.Collections.Concurrent;
 using System.Threading;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Illarion.Client.Unity.Common
 {
     public class SpritePool
     {
-        [SerializeField] private GameObject spritePrefab;
-        [SerializeField] private int minimalCapacity;
+        private SpriteRenderer _spritePrefab;
+        private int _minimalCapacity;
 
-        private ConcurrentBag<GameObject> sprites;
+        private ConcurrentBag<SpriteRenderer> sprites;
 
         private Thread cleaningThread = null;
 
-        public SpritePool()
+        public SpritePool(SpriteRenderer spritePrefab, int minimalCapacity)
         {
-            sprites = new ConcurrentBag<GameObject>();
+            _spritePrefab = spritePrefab;
+            _minimalCapacity = minimalCapacity;
+
+            sprites = new ConcurrentBag<SpriteRenderer>();
 
             for (int i = 0; i < minimalCapacity; i++)
             {
@@ -26,18 +27,18 @@ namespace Illarion.Client.Unity.Common
             
         }
 
-        public GameObject Get() 
+        public SpriteRenderer Get() 
         {
             if (sprites.TryTake(out var sprite)) return sprite;
-            return GameObject.Instantiate(spritePrefab);
+            return GameObject.Instantiate(_spritePrefab);
         }
 
-        public void Put(GameObject sprite)
+        public void Put(SpriteRenderer sprite)
         {
-            sprite.SetActive(false);
+            sprite.gameObject.SetActive(false);
             sprites.Add(sprite);
 
-            if (sprites.Count > 2 * minimalCapacity && cleaningThread != null && !cleaningThread.IsAlive)
+            if (sprites.Count > 2 * _minimalCapacity && cleaningThread != null && !cleaningThread.IsAlive)
             {
                 cleaningThread = new Thread(CleanupBag);
                 cleaningThread.Start();
@@ -46,7 +47,7 @@ namespace Illarion.Client.Unity.Common
 
         private void CleanupBag()
         {
-            while (sprites.Count > 2 * minimalCapacity)
+            while (sprites.Count > 1.5f * _minimalCapacity)
             {
                 if (sprites.TryTake(out var sprite)) GameObject.Destroy(sprite);
             }

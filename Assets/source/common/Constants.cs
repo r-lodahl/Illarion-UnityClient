@@ -4,7 +4,6 @@ namespace Illarion.Client.Common
     {
         public static class UserData
         {
-            // Internal Path
             public const string TilesetPath = "tiles/";
             public const string ItemsetPath = "items/items";
 
@@ -20,20 +19,24 @@ namespace Illarion.Client.Common
             public const string MapDataEndpoint = "api/map/zipball";
             
             // Internal Path: must be .txt .html .htm .xml .bytes .json .csv .yaml .fnt
+
             public const string TileTablePath = "tables/Tiles";
-            public const string OverlayTablePath = "tables/Overlays";
-            public const string ItemTablePath = "tables/Items";
-
             public const string TileFileName = "/tileMapping.bin";
-            public const string OverlayFileName = "/overlayMapping.bin";
-            public const string ItemFileName = "/itemMapping.bin";
-
             public const int TileNameColumn = 3;
             public const int TileIdColumn = 9;
+
+            public const string OverlayTablePath = "tables/Overlays";
+            public const string OverlayFileName = "/overlayMapping.bin";
             public const int OverlayNameColumn = 3;
             public const int OverlayIdColumn = 2;
-            public const int ItemNameColumn = 0;
-            public const int ItemIdColumn = 0;
+            
+            public const string ItemFileName = "/itemMapping.bin";
+            public const string ItemBaseFileName = "/itemBase.bin";
+            public const string ItemTablePath = "tables/Items";
+            public const int ItemNameColumn = 3;
+            public const int ItemIdColumn = 2;
+            public const int ItemOffsetXColumn = 6;
+            public const int ItemOffsetYColumn = 7;
         }
 
         public static class Tile
@@ -43,6 +46,8 @@ namespace Illarion.Client.Common
             public const int ShapeIdMask = 0xFC00;
             public const int OverlayIdMask = 0x03E0;
             public const int BaseIdMask = 0x001F;
+
+            public const int SizeX = 76;
         }
 
         public static class Scene

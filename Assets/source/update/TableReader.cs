@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using Illarion.Client.Common;
+using Illarion.Client.Map;
 using UnityEngine;
 
 namespace Illarion.Client.Update
@@ -40,12 +41,6 @@ namespace Illarion.Client.Update
             );
         }
 
-        /* Using the provided Tileset this function will create 
-        * a mapping Dictionary from the Server Table Overlay Ids
-        * to the Tileset Overlay Ids. 
-        *
-        * This mapping will be return and saved to disk
-        */
         public Dictionary<int,int[]> CreateOverlayMapping()
         {
             return CreateMapping(
@@ -55,6 +50,50 @@ namespace Illarion.Client.Update
                 Constants.Update.OverlayFileName,
                 tileNameToIndex
             );
+        }
+
+        public void CreateItemBaseFile(Dictionary<int, int[]> itemServerIdToLocalIds)
+        {
+            var tableFile = Resources.Load<TextAsset>(Constants.Update.ItemTablePath);
+            if (tableFile == null) throw new FileNotFoundException($"Failed opening intern tile table at {Constants.Update.ItemTablePath}!");
+
+            Dictionary<int, MapObjectBase> localIdToItemBase = new Dictionary<int, MapObjectBase>(itemServerIdToLocalIds.Count);
+
+            using (var lineReader = new StringReader(tableFile.text))
+            {
+                string line;
+                while ((line = lineReader.ReadLine()) != null)
+                {
+                    if (line.Equals("")) break;
+                    if (line.StartsWith("#") || line.StartsWith("/")) continue;
+
+                    string[] rowValues = line.Split(new char[] {','}, StringSplitOptions.None);
+
+                    int serverId = int.Parse(rowValues[Constants.Update.ItemIdColumn]);
+
+                    // One Unity unit is not measured in pixels but in tileSizeX -> 1 unit = TileSizeX; 1px = 1/TileSizeX;
+                    float offsetX = int.Parse(rowValues[Constants.Update.ItemOffsetXColumn]) / (float)Constants.Tile.SizeX; 
+                    float offsetY = int.Parse(rowValues[Constants.Update.ItemOffsetYColumn]) / (float)Constants.Tile.SizeX;
+
+                    var mapObjectBase = new MapObjectBase(offsetX, offsetY);
+
+                    int[] localIds = itemServerIdToLocalIds[serverId];
+
+                    foreach (var localId in localIds)
+                    {
+                        localIdToItemBase.Add(localId, mapObjectBase);
+                    }
+                }
+            }
+
+            BinaryFormatter binaryFormatter = new BinaryFormatter();
+            FileInfo fileInfo = new FileInfo(String.Concat(Game.FileSystem.UserDirectory, Constants.Update.ItemBaseFileName));
+
+            using (var file = fileInfo.Create())
+            {
+                binaryFormatter.Serialize(file, localIdToItemBase);
+                file.Flush();
+            }
         }
 
         /* Using the provided Tileset this function will create 
@@ -79,31 +118,37 @@ namespace Illarion.Client.Update
                 if (line.StartsWith("#") || line.StartsWith("/")) continue;
 
                 string[] rowValues = line.Split(new char[] {','}, StringSplitOptions.None);
-                string tileName = rowValues[nameColumn].Substring(1, rowValues[nameColumn].Length - 2);
+                string name = Path.GetFileName(rowValues[nameColumn].Substring(1, rowValues[nameColumn].Length - 2));
 
-                int[] localIds = new int[1];
-                int localId = LocalIdFromName(tileName, nameToIndex);
+                int[] localIds;
+                int localId = LocalIdFromName(name, nameToIndex);
 
                 if (localId == -1)
                 {
                     int variantId = 0;
                     List<int> ids = new List<int>();
-                    localId = LocalIdFromName(tileName + "-" + variantId, nameToIndex);
+                    localId = LocalIdFromName(name + "-" + variantId, nameToIndex);
                     
                     while (localId != -1) {
                         ids.Add(localId);
                         variantId++;
-                        localId = LocalIdFromName(tileName + "-" + variantId, nameToIndex);
+                        localId = LocalIdFromName(name + "-" + variantId, nameToIndex);
                     }
 
                     localIds = ids.ToArray();
                 }
                 else 
                 {
-                    localIds[0] = localId;
+                    localIds = new int[] {localId};
                 }
 
                 int serverId = int.Parse(rowValues[idColumn]);
+
+                if (localIds.Length == 0)
+                {
+                    Game.Logger.Warning($"Not found any local id for server id [{serverId}]({name}) @ {tablePath}");
+                    continue;
+                }
 
                 resultDic.Add(serverId, localIds);
             }

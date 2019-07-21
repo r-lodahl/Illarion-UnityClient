@@ -582,6 +582,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tilemap: {fileID: 1485579674}
+  spritePrefab: {fileID: 7923517621090938686, guid: a032e08991a17104f91d51191d36e1f0,
+    type: 3}
 --- !u!1 &2063300553
 GameObject:
   m_ObjectHideFlags: 0

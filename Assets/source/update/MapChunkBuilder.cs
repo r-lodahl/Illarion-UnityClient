@@ -205,7 +205,7 @@ namespace Illarion.Client.Update
 
         private int GetItemIdFromServerItemId(int serverItemId)
         {
-            if (serverItemId == 0 || !baseIdToLocalId.ContainsKey(serverItemId)) return 0;
+            if (serverItemId == 0 || !itemIdToLocalId.ContainsKey(serverItemId)) return 0;
             
             int[] itemVariantIds = itemIdToLocalId[serverItemId];
             return itemVariantIds[random.Next(itemVariantIds.Length)];
