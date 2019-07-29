@@ -40,6 +40,8 @@ namespace Illarion.Client.Update
             var overlayDictionary = tableReader.CreateOverlayMapping();
             var itemDictionary = tableReader.CreateItemMapping();
 
+            tableReader.CreateItemBaseFile(itemDictionary);
+
             await new WaitForBackgroundThread();
 
             var mapChunkBuilder = new MapChunkBuilder(tileDictionary, overlayDictionary, itemDictionary);

@@ -32,6 +32,8 @@ namespace Illarion.Client.Unity.Scene.Ingame
             sprites = Resources.LoadAll<Sprite>(Constants.UserData.ItemsetPath);
             
             spritePool = new SpritePool(spritePrefab, 2000);
+
+            Debug.Log(tilemap.CellToLocal(new Vector3Int(0,0,0)));
         }
 
         public void RegisterItemBases(Dictionary<int, MapObjectBase> itemBases)
@@ -77,14 +79,17 @@ namespace Illarion.Client.Unity.Scene.Ingame
                             var spriteItem = spritePool.Get();
                             var itemBase = itemBases[item.ObjectId];
 
+                            var sprite = sprites[item.ObjectId];
+
                             var position = tilemap.CellToLocal(new Vector3Int(x, -y, 0));
 
-                            position.x += itemBase.OffsetX - 0.5f;
-                            position.y += itemBase.OffsetY - 0.25f;
+
+                            position.x += itemBase.OffsetX;// + itemBase.OffsetX;// - 0.5f - itemBase.OffsetY; //itemBase.OffsetX
+                            position.y += 0.25f + sprite.bounds.extents.y + itemBase.OffsetY; // - itemBase.OffsetY;// - itemBase.OffsetX; //-itemBase.OffsetY
 
                             spriteItem.transform.position = position;
                             spriteItem.sortingOrder = layer * 4 + 1;
-                            spriteItem.sprite = sprites[item.ObjectId];
+                            spriteItem.sprite = sprite;
                             spriteItem.gameObject.SetActive(true);
                         }
                     }

@@ -77,10 +77,15 @@ namespace Illarion.Client.Update
 
                     var mapObjectBase = new MapObjectBase(offsetX, offsetY);
 
-                    int[] localIds = itemServerIdToLocalIds[serverId];
+                    if (!itemServerIdToLocalIds.TryGetValue(serverId, out int[] localIds))
+                    {
+                        Game.Logger.Warning($"Not found any local id for server id [{serverId}] @ CreateItemBaseFile");
+                        continue;
+                    }
 
                     foreach (var localId in localIds)
                     {
+                        if (localIdToItemBase.ContainsKey(localId)) continue;   // The server item contain several duplicates which link to the same local id
                         localIdToItemBase.Add(localId, mapObjectBase);
                     }
                 }
