@@ -69,6 +69,7 @@
      <Compile Include="Assets\source\map\Animation.cs" />
      <Compile Include="Assets\source\map\Chunk.cs" />
      <Compile Include="Assets\source\map\ChunkLoader.cs" />
+     <Compile Include="Assets\source\map\Light.cs" />
      <Compile Include="Assets\source\map\MapObject.cs" />
      <Compile Include="Assets\source\map\MapObjectBase.cs" />
      <Compile Include="Assets\source\map\SimpleObjectBase.cs" />
@@ -84,6 +85,7 @@
      <Compile Include="Assets\source\unity\scene\update\UpdateManager.cs" />
      <Compile Include="Assets\source\update\ClientUpdater.cs" />
      <Compile Include="Assets\source\update\MapChunkBuilder.cs" />
+     <Compile Include="Assets\source\update\OffsetReader.cs" />
      <Compile Include="Assets\source\update\RawMap.cs" />
      <Compile Include="Assets\source\update\TableReader.cs" />
      <Compile Include="Assets\TileManager.cs" />
@@ -96,6 +98,7 @@
      <None Include="Assets\libs\NewtonsoftJson\license.txt" />
      <None Include="Assets\libs\TextMesh Pro\Resources\Shaders\TMP_Bitmap-Custom-Atlas.shader" />
      <None Include="Assets\libs\NewtonsoftJson\Newtonsoft.Json.xml" />
+     <None Include="Assets\Resources\items\offsets.txt" />
      <None Include="Assets\libs\TextMesh Pro\Resources\LineBreaking Following Characters.txt" />
      <None Include="Assets\libs\TextMesh Pro\Sprites\EmojiOne Attribution.txt" />
      <None Include="Assets\libs\TextMesh Pro\Resources\Shaders\TMP_SDF-Mobile Masking.shader" />
