@@ -52,7 +52,7 @@ namespace Illarion.Client.Update
             );
         }
 
-        public void CreateItemBaseFile(Dictionary<int, int[]> itemServerIdToLocalIds)
+        public void CreateItemBaseFile(Dictionary<int, int[]> itemServerIdToLocalIds, Dictionary<int, int[]> localIdToOffsets)
         {
             var tableFile = Resources.Load<TextAsset>(Constants.Update.ItemTablePath);
             if (tableFile == null) throw new FileNotFoundException($"Failed opening intern tile table at {Constants.Update.ItemTablePath}!");
@@ -68,14 +68,26 @@ namespace Illarion.Client.Update
                     if (line.StartsWith("#") || line.StartsWith("/")) continue;
 
                     string[] rowValues = line.Split(new char[] {','}, StringSplitOptions.None);
+                    
+                    # region Extraction of MapObjectBase values 
 
                     int serverId = int.Parse(rowValues[Constants.Update.ItemIdColumn]);
+                    int itemMode = int.Parse(rowValues[Constants.Update.ItemModeColumn]);
 
                     // One Unity unit is not measured in pixels but in tileSizeX -> 1 unit = TileSizeX; 1px = 1/TileSizeX;
-                    float offsetX = int.Parse(rowValues[Constants.Update.ItemOffsetXColumn]) / (float)Constants.Tile.SizeX; 
-                    float offsetY = int.Parse(rowValues[Constants.Update.ItemOffsetYColumn]) / (float)Constants.Tile.SizeX;
+                    float baseOffsetX = int.Parse(rowValues[Constants.Update.ItemOffsetXColumn]);
+                    float baseOffsetY = int.Parse(rowValues[Constants.Update.ItemOffsetYColumn]);
 
-                    var mapObjectBase = new MapObjectBase(offsetX, offsetY);
+                    float scaleVariance = int.Parse(rowValues[Constants.Update.ItemScalingColumn]) / 100f;
+
+                    int emittedLight = int.Parse(rowValues[Constants.Update.ItemLightEmitColumn]);
+
+                    float colorModRed = int.Parse(rowValues[Constants.Update.ItemColorModRedColumn]) / 255f;
+                    float colorModGreen = int.Parse(rowValues[Constants.Update.ItemColorModGreenColumn]) / 255f;
+                    float colorModBlue = int.Parse(rowValues[Constants.Update.ItemColorModBlueColumn]) / 255f;
+                    float colorModAlpha = int.Parse(rowValues[Constants.Update.ItemColorModAlphaColumn]) / 255f;
+
+                    # endregion
 
                     if (!itemServerIdToLocalIds.TryGetValue(serverId, out int[] localIds))
                     {
@@ -83,10 +95,37 @@ namespace Illarion.Client.Update
                         continue;
                     }
 
+                    MapObjectBase mapObject;
+                    if (itemMode == (int)Constants.ItemMode.Simple)
+                    {
+                        mapObject = new SimpleObjectBase(
+                            baseOffsetX / (float)Constants.Tile.SizeX,
+                            baseOffsetY / (float)Constants.Tile.SizeX,
+                            colorModRed, colorModGreen, colorModBlue, colorModAlpha,
+                            scaleVariance, emittedLight);
+                    }
+                    else
+                    {
+                        float[] offsetX = new float[localIds.Length];
+                        float[] offsetY = new float[localIds.Length];
+
+                        for (int i = 0; i < localIds.Length; i++)
+                        {
+                            int[] offsetCorrection = localIdToOffsets[localIds[i]];
+                            offsetX[i] = (baseOffsetX + (offsetCorrection[2] + offsetCorrection[4]) / 2.0f) / (float)Constants.Tile.SizeX;
+                            offsetY[i] = (baseOffsetX + offsetCorrection[5]) / (float)Constants.Tile.SizeX;
+                        }
+
+                        mapObject = new VariantObjectBase(
+                            localIds, offsetX, offsetY,
+                            colorModRed, colorModGreen, colorModBlue, colorModAlpha,
+                            scaleVariance, emittedLight);
+                    }
+
                     foreach (var localId in localIds)
                     {
                         if (localIdToItemBase.ContainsKey(localId)) continue;   // The server item contain several duplicates which link to the same local id
-                        localIdToItemBase.Add(localId, mapObjectBase);
+                        localIdToItemBase.Add(localId, mapObject);
                     }
                 }
             }

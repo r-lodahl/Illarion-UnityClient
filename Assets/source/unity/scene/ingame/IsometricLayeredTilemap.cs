@@ -81,11 +81,16 @@ namespace Illarion.Client.Unity.Scene.Ingame
 
                             var sprite = sprites[item.ObjectId];
 
-                            var position = tilemap.CellToLocal(new Vector3Int(x, -y, 0));
+                            //var position = tilemap.CellToLocal(new Vector3Int(x, -y, 0));
 
 
-                            position.x += itemBase.OffsetX;// + itemBase.OffsetX;// - 0.5f - itemBase.OffsetY; //itemBase.OffsetX
-                            position.y += 0.25f + sprite.bounds.extents.y + itemBase.OffsetY; // - itemBase.OffsetY;// - itemBase.OffsetX; //-itemBase.OffsetY
+                            //position.x += itemBase.OffsetX;
+                            //position.y += 0.25f + sprite.bounds.extents.y + itemBase.OffsetY;
+
+                            var position = new Vector2(
+                                (x + y) * (38f/76f) + itemBase.OffsetX,
+                                (x - y) * (19f/76f) + 0.25f + sprite.bounds.extents.y + itemBase.OffsetY
+                            );
 
                             spriteItem.transform.position = position;
                             spriteItem.sortingOrder = layer * 4 + 1;

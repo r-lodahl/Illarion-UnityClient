@@ -66,10 +66,13 @@
      <Compile Include="Assets\source\common\Unzip.cs" />
      <Compile Include="Assets\source\common\Vector2i.cs" />
      <Compile Include="Assets\source\common\Vector3i.cs" />
+     <Compile Include="Assets\source\map\Animation.cs" />
      <Compile Include="Assets\source\map\Chunk.cs" />
      <Compile Include="Assets\source\map\ChunkLoader.cs" />
      <Compile Include="Assets\source\map\MapObject.cs" />
      <Compile Include="Assets\source\map\MapObjectBase.cs" />
+     <Compile Include="Assets\source\map\SimpleObjectBase.cs" />
+     <Compile Include="Assets\source\map\VariantObjectBase.cs" />
      <Compile Include="Assets\source\unity\common\Config.cs" />
      <Compile Include="Assets\source\unity\common\FileSystem.cs" />
      <Compile Include="Assets\source\unity\common\Logger.cs" />
@@ -98,9 +101,11 @@
      <None Include="Assets\libs\TextMesh Pro\Resources\Shaders\TMP_SDF-Mobile Masking.shader" />
      <None Include="Assets\libs\TextMesh Pro\Resources\Shaders\TMP_Bitmap-Mobile.shader" />
      <None Include="Assets\Resources\tables\Tiles.txt" />
+     <None Include="Assets\materials\Sprites-SrcAlpha-OneMinusSrcAlpha.shader" />
      <None Include="Assets\libs\TextMesh Pro\Resources\Shaders\TMP_SDF Overlay.shader" />
      <None Include="Assets\libs\TextMesh Pro\Fonts\LiberationSans - OFL.txt" />
      <None Include="Assets\libs\TextMesh Pro\Resources\Shaders\TMPro_Surface.cginc" />
+     <None Include="Assets\materials\Sprites-DstColor-Zero.shader" />
      <None Include="Assets\libs\TextMesh Pro\Resources\Shaders\TMP_SDF-Mobile Overlay.shader" />
      <None Include="Assets\libs\TextMesh Pro\Resources\Shaders\TMP_Bitmap.shader" />
      <None Include="Assets\libs\TextMesh Pro\Resources\Shaders\TMPro.cginc" />

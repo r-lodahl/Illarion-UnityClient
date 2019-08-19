@@ -34,13 +34,17 @@ namespace Illarion.Client.Update
 
             await new WaitForUpdate();
 
-            var tableReader = new TableReader(GetTileNameDictionary(), GetItemNameDictionary());
+            var tileNameDictionary = GetTileNameDictionary();
+            var itemNameDictionary = GetItemNameDictionary();
+            var tableReader = new TableReader(tileNameDictionary, itemNameDictionary);
 
             var tileDictionary = tableReader.CreateTileMapping();
             var overlayDictionary = tableReader.CreateOverlayMapping();
             var itemDictionary = tableReader.CreateItemMapping();
-
-            tableReader.CreateItemBaseFile(itemDictionary);
+            
+            var offsetReader = new OffsetReader();
+            var itemOffsets = offsetReader.AdaptItemOffsets(Constants.Update.ItemOffsetPath, itemNameDictionary);
+            tableReader.CreateItemBaseFile(itemDictionary, itemOffsets);
 
             await new WaitForBackgroundThread();
 

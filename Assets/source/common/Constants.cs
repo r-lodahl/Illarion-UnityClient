@@ -19,7 +19,6 @@ namespace Illarion.Client.Common
             public const string MapDataEndpoint = "api/map/zipball";
             
             // Internal Path: must be .txt .html .htm .xml .bytes .json .csv .yaml .fnt
-
             public const string TileTablePath = "tables/Tiles";
             public const string TileFileName = "/tileMapping.bin";
             public const int TileNameColumn = 3;
@@ -33,10 +32,22 @@ namespace Illarion.Client.Common
             public const string ItemFileName = "/itemMapping.bin";
             public const string ItemBaseFileName = "/itemBase.bin";
             public const string ItemTablePath = "tables/Items";
-            public const int ItemNameColumn = 3;
+            public const string ItemOffsetPath = "items/offsets";
+
             public const int ItemIdColumn = 2;
+            public const int ItemNameColumn = 3;
+            public const int ItemFrameCountColumn = 4;
+            public const int ItemModeColumn = 5;
             public const int ItemOffsetXColumn = 6;
             public const int ItemOffsetYColumn = 7;
+            public const int ItemAnimationSpeedColumn = 8;
+            public const int ItemScalingColumn = 15;
+            public const int ItemSurfaceLevelColumn = 20;
+            public const int ItemLightEmitColumn = 21;
+            public const int ItemColorModRedColumn = 23;
+            public const int ItemColorModGreenColumn = 24;
+            public const int ItemColorModBlueColumn = 25;
+            public const int ItemColorModAlphaColumn = 26;
         }
 
         public static class Tile
@@ -64,6 +75,13 @@ namespace Illarion.Client.Common
 
             public const int OverlayDrawingAdd = 2;
             public const int OverlayCellMinus = 1;
+        }
+
+        public enum ItemMode
+        {
+            Simple = 0,
+            Animated = 1,
+            Variance = 2
         }
     }
 }
