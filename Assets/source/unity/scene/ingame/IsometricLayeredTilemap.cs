@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using Illarion.Client.Unity.Common;
+using Illarion.Client.Unity.Map;
 using Illarion.Client.Common;
 using Illarion.Client.Map;
 
@@ -17,7 +18,7 @@ namespace Illarion.Client.Unity.Scene.Ingame
         private Tile[] tiles;
         private Sprite[] sprites;
         
-        private HashSet<Chunk> loadedChunks;
+        private Dictionary<Chunk, DynamicChunk> loadedChunks;
 
         private SpritePool spritePool;
 
@@ -25,15 +26,12 @@ namespace Illarion.Client.Unity.Scene.Ingame
 
         private void Awake()
         {
-            loadedChunks = new HashSet<Chunk>();
+            loadedChunks = new Dictionary<Chunk, DynamicChunk>(9);
 
             tiles = Resources.LoadAll<Tile>(Constants.UserData.TilesetPath);
-
             sprites = Resources.LoadAll<Sprite>(Constants.UserData.ItemsetPath);
             
             spritePool = new SpritePool(spritePrefab, 2000);
-
-            Debug.Log(tilemap.CellToLocal(new Vector3Int(0,0,0)));
         }
 
         public void RegisterItemBases(Dictionary<int, MapObjectBase> itemBases)
@@ -51,7 +49,8 @@ namespace Illarion.Client.Unity.Scene.Ingame
         {
             if (chunk == null) return;
 
-            loadedChunks.Add(chunk);
+            var dynamicChunk = new DynamicChunk(spritePool);
+            loadedChunks.Add(chunk, dynamicChunk);
 
             var applicableLayerIndices = GetApplicableLayerIndices(chunk.Layers);
 
@@ -91,24 +90,17 @@ namespace Illarion.Client.Unity.Scene.Ingame
                                 offset = variantBase.GetOffset(item.ObjectId);
                             }
 
-                            //var position = tilemap.CellToLocal(new Vector3Int(x, -y, 0));
-                            //position.x += itemBase.OffsetX;
-                            //position.y += 0.25f + sprite.bounds.extents.y + itemBase.OffsetY;
-
                             var position = new Vector2(
                                 (x + y) * (38f/76f) + offset[0],
                                 (x - y) * (19f/76f) + 0.25f + sprite.bounds.extents.y + offset[1]
                             );
 
-                            if (item.ObjectId == 1190)
-                            {
-                                Debug.Log($"{offset[0]*Constants.Tile.SizeX},{offset[1]*Constants.Tile.SizeX}");
-                            }
-
                             spriteItem.transform.position = position;
                             spriteItem.sortingOrder = layer * 4 + 1;
                             spriteItem.sprite = sprite;
                             spriteItem.gameObject.SetActive(true);
+
+                            dynamicChunk.RegisterItem(spriteItem);
                         }
                     }
                 }
@@ -140,6 +132,7 @@ namespace Illarion.Client.Unity.Scene.Ingame
                 }
             }
 
+            loadedChunks[chunk].Unload();
             loadedChunks.Remove(chunk);
         }
 

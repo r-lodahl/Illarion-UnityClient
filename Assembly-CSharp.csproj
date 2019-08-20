@@ -79,6 +79,7 @@
      <Compile Include="Assets\source\unity\common\Logger.cs" />
      <Compile Include="Assets\source\unity\common\SpritePool.cs" />
      <Compile Include="Assets\source\unity\map\BinaryLoader.cs" />
+     <Compile Include="Assets\source\unity\map\DynamicChunk.cs" />
      <Compile Include="Assets\source\unity\scene\ingame\IngameManager.cs" />
      <Compile Include="Assets\source\unity\scene\ingame\IsometricLayeredTilemap.cs" />
      <Compile Include="Assets\source\unity\scene\ingame\Player.cs" />
