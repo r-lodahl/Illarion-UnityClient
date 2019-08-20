@@ -3,17 +3,17 @@ using System.Collections.Generic;
 
 namespace Illarion.Client.Unity.Map
 {
-    public class Animation
+    public class AnimationRunner
     {
-        int speed;
+        private int speed = 0;
 
-        float currentTime;
-        int currentIndex;
+        private float currentTime;
+        private int currentIndex;
 
-        Sprite[] sprites;
+        Sprite[] sprites = null;
         List<SpriteRenderer> registeredSprites;
 
-        public Animation()
+        public AnimationRunner()
         {
             registeredSprites = new List<SpriteRenderer>();
             

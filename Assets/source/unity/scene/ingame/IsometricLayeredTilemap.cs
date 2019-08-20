@@ -13,7 +13,7 @@ namespace Illarion.Client.Unity.Scene.Ingame
         
         [SerializeField] private SpriteRenderer spritePrefab = null;
 
-        private int referenceLayer;
+        private int referenceLayer = 0;
         private Tile[] tiles;
         private Sprite[] sprites;
         
@@ -78,19 +78,32 @@ namespace Illarion.Client.Unity.Scene.Ingame
                         {
                             var spriteItem = spritePool.Get();
                             var itemBase = itemBases[item.ObjectId];
-
                             var sprite = sprites[item.ObjectId];
 
+                            float[] offset;
+                            if (itemBase is SimpleObjectBase simpleBase)
+                            {
+                                offset = simpleBase.Offset;
+                            }
+                            else
+                            {
+                                var variantBase = (VariantObjectBase) itemBase;
+                                offset = variantBase.GetOffset(item.ObjectId);
+                            }
+
                             //var position = tilemap.CellToLocal(new Vector3Int(x, -y, 0));
-
-
                             //position.x += itemBase.OffsetX;
                             //position.y += 0.25f + sprite.bounds.extents.y + itemBase.OffsetY;
 
                             var position = new Vector2(
-                                (x + y) * (38f/76f) + itemBase.OffsetX,
-                                (x - y) * (19f/76f) + 0.25f + sprite.bounds.extents.y + itemBase.OffsetY
+                                (x + y) * (38f/76f) + offset[0],
+                                (x - y) * (19f/76f) + 0.25f + sprite.bounds.extents.y + offset[1]
                             );
+
+                            if (item.ObjectId == 1190)
+                            {
+                                Debug.Log($"{offset[0]*Constants.Tile.SizeX},{offset[1]*Constants.Tile.SizeX}");
+                            }
 
                             spriteItem.transform.position = position;
                             spriteItem.sortingOrder = layer * 4 + 1;

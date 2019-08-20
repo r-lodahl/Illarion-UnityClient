@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime;
 using System.Runtime.Serialization.Formatters.Binary;
 using Illarion.Client.Common;
 using Illarion.Client.Map;
@@ -99,8 +100,7 @@ namespace Illarion.Client.Update
                     if (itemMode == (int)Constants.ItemMode.Simple)
                     {
                         mapObject = new SimpleObjectBase(
-                            baseOffsetX / (float)Constants.Tile.SizeX,
-                            baseOffsetY / (float)Constants.Tile.SizeX,
+                            CorrectBaseOffset(baseOffsetX, baseOffsetY, localIdToOffsets, localIds[0]),
                             colorModRed, colorModGreen, colorModBlue, colorModAlpha,
                             scaleVariance, emittedLight);
                     }
@@ -111,9 +111,9 @@ namespace Illarion.Client.Update
 
                         for (int i = 0; i < localIds.Length; i++)
                         {
-                            int[] offsetCorrection = localIdToOffsets[localIds[i]];
-                            offsetX[i] = (baseOffsetX + (offsetCorrection[2] + offsetCorrection[4]) / 2.0f) / (float)Constants.Tile.SizeX;
-                            offsetY[i] = (baseOffsetX + offsetCorrection[5]) / (float)Constants.Tile.SizeX;
+                            var correctedOffsets = CorrectBaseOffset(baseOffsetX, baseOffsetY, localIdToOffsets, localIds[i]);
+                            offsetX[i] = correctedOffsets[0];
+                            offsetY[i] = correctedOffsets[1];
                         }
 
                         mapObject = new VariantObjectBase(
@@ -140,6 +140,22 @@ namespace Illarion.Client.Update
             }
         }
 
+        private float[] CorrectBaseOffset(float baseOffsetX, float baseOffsetY, Dictionary<int, int[]> localIdToOffsets, int objectId) 
+        {
+            if (localIdToOffsets.TryGetValue(objectId, out var offsetCorrection))
+            {
+                return new float[] {
+                    (baseOffsetX + (offsetCorrection[0] + offsetCorrection[2]) / 2.0f) / (float)Constants.Tile.SizeX,
+                    (baseOffsetY + offsetCorrection[3]) / (float)Constants.Tile.SizeX
+                };
+            }
+            else
+            {
+                Debug.LogError($"No offset correction found for {objectId}");
+                return new float[] {0f, 0f};
+            }
+        }
+
         /* Using the provided Tileset this function will create 
         * a mapping Dictionary from the Server Table Tile Ids
         * to the Tileset Tile Ids. 
@@ -162,7 +178,7 @@ namespace Illarion.Client.Update
                 if (line.StartsWith("#") || line.StartsWith("/")) continue;
 
                 string[] rowValues = line.Split(new char[] {','}, StringSplitOptions.None);
-                string name = Path.GetFileName(rowValues[nameColumn].Substring(1, rowValues[nameColumn].Length - 2));
+                string name = rowValues[nameColumn].Substring(1, rowValues[nameColumn].Length - 2).Replace("/","-");
 
                 int[] localIds;
                 int localId = LocalIdFromName(name, nameToIndex);

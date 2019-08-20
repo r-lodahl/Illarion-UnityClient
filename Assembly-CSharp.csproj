@@ -66,7 +66,7 @@
      <Compile Include="Assets\source\common\Unzip.cs" />
      <Compile Include="Assets\source\common\Vector2i.cs" />
      <Compile Include="Assets\source\common\Vector3i.cs" />
-     <Compile Include="Assets\source\map\Animation.cs" />
+     <Compile Include="Assets\source\map\AnimationRunner.cs" />
      <Compile Include="Assets\source\map\Chunk.cs" />
      <Compile Include="Assets\source\map\ChunkLoader.cs" />
      <Compile Include="Assets\source\map\Light.cs" />

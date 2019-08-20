@@ -30,11 +30,13 @@ namespace Illarion.Client.Update
 
                     if (itemNameToLocalId.TryGetValue(values[0], out var localId))
                     {
-                        int[] offsets = new int[4];
-                        Array.Copy(values, 1, offsets, 0, 4);
-                        localIdToOffset.Add(localId, offsets);
+                        localIdToOffset.Add(localId, new int[] {int.Parse(values[2]),int.Parse(values[3]),int.Parse(values[4]),int.Parse(values[5])});
                     }
-                    else continue;
+                    else 
+                    {
+                        Debug.LogError($"{values[0]} no id found");
+                        continue;
+                    }
                 }
             }
             return localIdToOffset;            

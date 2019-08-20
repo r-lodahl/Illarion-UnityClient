@@ -7,11 +7,10 @@ namespace Illarion.Client.Map
     public class VariantObjectBase : MapObjectBase
     {
         private int[] ids;
-    
         private float[] offsetX;
         private float[] offsetY;
 
-        public int getNextId(int id)
+        public int GetNextId(int id)
         {
             int idIndex = Array.IndexOf(ids, id);
             
@@ -26,7 +25,7 @@ namespace Illarion.Client.Map
             return ids[0];
         }
 
-        public float[] getOffset(int id)
+        public float[] GetOffset(int id)
         {
             int idIndex = Array.IndexOf(ids, id);
             
