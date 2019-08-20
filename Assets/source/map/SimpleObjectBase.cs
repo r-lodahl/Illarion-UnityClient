@@ -7,7 +7,7 @@ namespace Illarion.Client.Map
     {
         public float[] Offset {get;}
 
-        public SimpleObjectBase(float[] offset, float red, float green, float blue, float alpha, float sizeVariance, int encodedLight) : base(red, green, blue, alpha, sizeVariance, encodedLight)
+        public SimpleObjectBase(float[] offset, float red, float green, float blue, float alpha, float sizeVariance, int encodedLight, float height) : base(red, green, blue, alpha, sizeVariance, encodedLight, height)
         {
             Offset = offset;
         }

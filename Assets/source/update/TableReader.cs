@@ -88,6 +88,8 @@ namespace Illarion.Client.Update
                     float colorModBlue = int.Parse(rowValues[Constants.Update.ItemColorModBlueColumn]) / 255f;
                     float colorModAlpha = int.Parse(rowValues[Constants.Update.ItemColorModAlphaColumn]) / 255f;
 
+                    float height = int.Parse(rowValues[Constants.Update.ItemSurfaceLevelColumn]) / (float)Constants.Tile.SizeX;
+
                     # endregion
 
                     if (!itemServerIdToLocalIds.TryGetValue(serverId, out int[] localIds))
@@ -102,7 +104,7 @@ namespace Illarion.Client.Update
                         mapObject = new SimpleObjectBase(
                             CorrectBaseOffset(baseOffsetX, baseOffsetY, localIdToOffsets, localIds[0]),
                             colorModRed, colorModGreen, colorModBlue, colorModAlpha,
-                            scaleVariance, emittedLight);
+                            scaleVariance, emittedLight, height);
                     }
                     else
                     {
@@ -116,10 +118,12 @@ namespace Illarion.Client.Update
                             offsetY[i] = correctedOffsets[1];
                         }
 
+                        int animationSpeed = int.Parse(rowValues[Constants.Update.ItemAnimationSpeedColumn]);
+                        
                         mapObject = new VariantObjectBase(
-                            localIds, offsetX, offsetY,
+                            localIds, offsetX, offsetY, animationSpeed,
                             colorModRed, colorModGreen, colorModBlue, colorModAlpha,
-                            scaleVariance, emittedLight);
+                            scaleVariance, emittedLight, height);
                     }
 
                     foreach (var localId in localIds)

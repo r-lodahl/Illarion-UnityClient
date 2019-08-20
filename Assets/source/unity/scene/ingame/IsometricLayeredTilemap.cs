@@ -71,7 +71,8 @@ namespace Illarion.Client.Unity.Scene.Ingame
                         -y - Constants.Map.OverlayCellMinus, layer * Constants.Map.LayerDrawingFactor
                         + Constants.Map.OverlayDrawingAdd), tiles[overlayId]);
 
-                    if (chunk.Items.TryGetValue(new Vector3i(x, y, layer), out var items)) 
+                    var tilePosition = new Vector3i(x, y, layer);
+                    if (chunk.Items.TryGetValue(tilePosition, out var items)) 
                     {
                         foreach (var item in items)
                         {
@@ -90,9 +91,10 @@ namespace Illarion.Client.Unity.Scene.Ingame
                                 offset = variantBase.GetOffset(item.ObjectId);
                             }
 
-                            var position = new Vector2(
+                            var position = new Vector3(
                                 (x + y) * (38f/76f) + offset[0],
-                                (x - y) * (19f/76f) + 0.25f + sprite.bounds.extents.y + offset[1]
+                                (x - y) * (19f/76f) + 0.25f + sprite.bounds.extents.y + offset[1] + dynamicChunk.GetHeightLevel(tilePosition),
+                                Mathf.Ceil(dynamicChunk.GetHeightLevel(tilePosition) / 0.5f)
                             );
 
                             spriteItem.transform.position = position;
@@ -100,7 +102,9 @@ namespace Illarion.Client.Unity.Scene.Ingame
                             spriteItem.sprite = sprite;
                             spriteItem.gameObject.SetActive(true);
 
+                            if (itemBase.Height != 0.0f) dynamicChunk.IncreaseHeightLevel(tilePosition, itemBase.Height);
                             dynamicChunk.RegisterItem(spriteItem);
+                            
                         }
                     }
                 }

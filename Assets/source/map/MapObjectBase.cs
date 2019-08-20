@@ -15,7 +15,9 @@ namespace Illarion.Client.Map
         public bool IsEmittingLight {get;}
         public Light Light {get;}
 
-        public MapObjectBase(float red, float green, float blue, float alpha, float sizeVariance, int encodedLight)
+        public float Height {get;}
+
+        public MapObjectBase(float red, float green, float blue, float alpha, float sizeVariance, int encodedLight, float height)
         {
             ColorRed = red;
             ColorGreen = green;
@@ -23,6 +25,8 @@ namespace Illarion.Client.Map
             ColorAlpha = alpha;
 
             SizeVariance = sizeVariance;
+
+            Height = height;
 
             if (encodedLight == 0) 
             {

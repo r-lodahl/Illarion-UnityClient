@@ -10,6 +10,9 @@ namespace Illarion.Client.Map
         private float[] offsetX;
         private float[] offsetY;
 
+        public int AnimationSpeed {get;}
+        public bool IsAnimated { get { return AnimationSpeed != 0.0f; } }
+
         public int GetNextId(int id)
         {
             int idIndex = Array.IndexOf(ids, id);
@@ -38,11 +41,13 @@ namespace Illarion.Client.Map
             return new float[] {offsetX[idIndex], offsetY[idIndex]};
         }
 
-        public VariantObjectBase(int[] ids, float[] offsetX, float[] offsetY, float red, float green, float blue, float alpha, float sizeVariance, int encodedLight) : base(red, green, blue, alpha, sizeVariance, encodedLight)
+        public VariantObjectBase(int[] ids, float[] offsetX, float[] offsetY, int animationSpeed, float red, float green, float blue, float alpha, float sizeVariance, int encodedLight, float height) : base(red, green, blue, alpha, sizeVariance, encodedLight, height)
         {
             this.ids = ids;
             this.offsetX = offsetX;
             this.offsetY = offsetY;
+
+            AnimationSpeed = animationSpeed;
         }
     }
 }
