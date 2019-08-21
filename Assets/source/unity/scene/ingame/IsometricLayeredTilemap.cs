@@ -65,15 +65,22 @@ namespace Illarion.Client.Unity.Scene.Ingame
 
                     int layer = chunk.Layers[layerIndex];
 
-                    if (tileId > 0) tilemap.SetTile(new Vector3Int(x, -y, layer * Constants.Map.LayerDrawingFactor), tiles[tileId]);
+                    int zValue = (referenceLayer-layer) * 2;
+
+                    if (tileId > 0) tilemap.SetTile(new Vector3Int(
+                        x - layer * 2,
+                        -y + layer * 2,
+                        zValue), tiles[tileId]);
                     
-                    if (overlayId > 0) tilemap.SetTile(new Vector3Int(x - Constants.Map.OverlayCellMinus, 
-                        -y - Constants.Map.OverlayCellMinus, layer * Constants.Map.LayerDrawingFactor
-                        + Constants.Map.OverlayDrawingAdd), tiles[overlayId]);
+                    if (overlayId > 0) tilemap.SetTile(new Vector3Int(
+                        x - layer * 2, 
+                        -y + layer * 2,
+                        zValue - 1), tiles[overlayId]);
 
                     var tilePosition = new Vector3i(x, y, layer);
                     if (chunk.Items.TryGetValue(tilePosition, out var items)) 
                     {
+                        float n = 0f;
                         foreach (var item in items)
                         {
                             var spriteItem = spritePool.Get();
@@ -92,19 +99,19 @@ namespace Illarion.Client.Unity.Scene.Ingame
                             }
 
                             var position = new Vector3(
-                                (x + y) * (38f/76f) + offset[0],
-                                (x - y) * (19f/76f) + 0.25f + sprite.bounds.extents.y + offset[1] + dynamicChunk.GetHeightLevel(tilePosition),
-                                Mathf.Ceil(dynamicChunk.GetHeightLevel(tilePosition) / 0.5f)
+                                (x + y) * (38f/76f) - (1f/76f) - sprite.bounds.extents.x + offset[0],
+                                (x - y) * (19f/76f) + 0.25f + offset[1] + dynamicChunk.GetHeightLevel(tilePosition),
+                                zValue - 1 - ((y-x) / 20000f) - 0.3f - n
                             );
 
                             spriteItem.transform.position = position;
-                            spriteItem.sortingOrder = layer * 4 + 1;
                             spriteItem.sprite = sprite;
                             spriteItem.gameObject.SetActive(true);
 
                             if (itemBase.Height != 0.0f) dynamicChunk.IncreaseHeightLevel(tilePosition, itemBase.Height);
                             dynamicChunk.RegisterItem(spriteItem);
-                            
+
+                            n += 0.000001f;
                         }
                     }
                 }
