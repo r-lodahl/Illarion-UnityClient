@@ -118,7 +118,7 @@ namespace Illarion.Client.Update
                             offsetY[i] = correctedOffsets[1];
                         }
 
-                        int animationSpeed = int.Parse(rowValues[Constants.Update.ItemAnimationSpeedColumn]);
+                        float animationSpeed = int.Parse(rowValues[Constants.Update.ItemAnimationSpeedColumn]) / 100f;
                         
                         mapObject = new VariantObjectBase(
                             localIds, offsetX, offsetY, animationSpeed,

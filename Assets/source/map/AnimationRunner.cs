@@ -1,22 +1,26 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Illarion.Client.Map;
 
 namespace Illarion.Client.Unity.Map
 {
     public class AnimationRunner
     {
-        private int speed = 0;
+        public static Sprite[] ItemSprites {get;set;}
 
         private float currentTime;
-        private int currentIndex;
+        private int currentId;
 
-        Sprite[] sprites = null;
-        List<SpriteRenderer> registeredSprites;
+        private VariantObjectBase animationInfo;
+        private List<SpriteRenderer> registeredSprites;
 
-        public AnimationRunner()
+        public AnimationRunner(VariantObjectBase animationBase, int animationId)
         {
             registeredSprites = new List<SpriteRenderer>();
-            
+            currentId = animationId;
+            animationInfo = animationBase;
+
+            Debug.Log($"Registered animation with speed of {animationInfo.AnimationSpeed}");
         }
 
         public void RegisterAnimatedSprite(SpriteRenderer sprite)
@@ -24,18 +28,16 @@ namespace Illarion.Client.Unity.Map
             registeredSprites.Add(sprite);
         }
 
-        private void AnimationTick(float deltaTime)
+        public void Tick(float deltaTime)
         {
             currentTime += deltaTime;
-
-            if (currentTime < speed) return;
-            
+            if (currentTime < animationInfo.AnimationSpeed) return;
             currentTime = 0f;
 
-            currentIndex++;
-            if (currentIndex == sprites.Length) currentIndex = 0;
+            currentId = animationInfo.GetNextId(currentId);
+            var nextSprite = ItemSprites[currentId];
 
-            foreach(var renderer in registeredSprites) renderer.sprite = sprites[currentIndex];
+            foreach(var renderer in registeredSprites) renderer.sprite = nextSprite;
         }
     }
 }

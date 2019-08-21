@@ -23,6 +23,7 @@ namespace Illarion.Client.Unity.Scene.Ingame
         private SpritePool spritePool;
 
         private Dictionary<int, MapObjectBase> itemBases;
+        private Dictionary<VariantObjectBase, AnimationRunner> animationRunners;
 
         private void Awake()
         {
@@ -32,6 +33,9 @@ namespace Illarion.Client.Unity.Scene.Ingame
             sprites = Resources.LoadAll<Sprite>(Constants.UserData.ItemsetPath);
             
             spritePool = new SpritePool(spritePrefab, 2000);
+
+            AnimationRunner.ItemSprites = sprites;
+            animationRunners = new Dictionary<VariantObjectBase, AnimationRunner>();
         }
 
         public void RegisterItemBases(Dictionary<int, MapObjectBase> itemBases)
@@ -96,6 +100,17 @@ namespace Illarion.Client.Unity.Scene.Ingame
                             {
                                 var variantBase = (VariantObjectBase) itemBase;
                                 offset = variantBase.GetOffset(item.ObjectId);
+
+                                if (variantBase.IsAnimated)
+                                {
+                                    if (animationRunners.TryGetValue(variantBase, out var animationRunner)) animationRunner.RegisterAnimatedSprite(spriteItem);
+                                    else 
+                                    {
+                                        animationRunner = new AnimationRunner(variantBase, item.ObjectId);
+                                        animationRunner.RegisterAnimatedSprite(spriteItem);
+                                        animationRunners.Add(variantBase, animationRunner);
+                                    }
+                                }
                             }
 
                             var position = new Vector3(
@@ -166,6 +181,11 @@ namespace Illarion.Client.Unity.Scene.Ingame
         {
             tileId = compressedId % Constants.Tile.OverlayFactor;
             overlayId = compressedId / Constants.Tile.OverlayFactor;
+        }
+
+        private void Update()
+        {
+            foreach(var animationRunner in animationRunners) animationRunner.Value.Tick(Time.deltaTime);
         }
     }
 }
