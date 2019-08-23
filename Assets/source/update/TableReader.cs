@@ -53,12 +53,12 @@ namespace Illarion.Client.Update
             );
         }
 
-        public void CreateItemBaseFile(Dictionary<int, int[]> itemServerIdToLocalIds, Dictionary<int, int[]> localIdToOffsets)
+        public void CreateItemBaseFile(Dictionary<string, int> itemNameToLocalIds, Dictionary<int, int[]> localIdToCorrectionOffsets)//Dictionary<int, int[]> itemServerIdToLocalIds, Dictionary<int, int[]> localIdToOffsets)
         {
             var tableFile = Resources.Load<TextAsset>(Constants.Update.ItemTablePath);
             if (tableFile == null) throw new FileNotFoundException($"Failed opening intern tile table at {Constants.Update.ItemTablePath}!");
 
-            Dictionary<int, MapObjectBase> localIdToItemBase = new Dictionary<int, MapObjectBase>(itemServerIdToLocalIds.Count);
+            Dictionary<int, MapObjectBase> serverIdToItemBase = new Dictionary<int, MapObjectBase>();
 
             using (var lineReader = new StringReader(tableFile.text))
             {
@@ -70,12 +70,12 @@ namespace Illarion.Client.Update
 
                     string[] rowValues = line.Split(new char[] {','}, StringSplitOptions.None);
                     
-                    # region Extraction of MapObjectBase values 
-
                     int serverId = int.Parse(rowValues[Constants.Update.ItemIdColumn]);
-                    int itemMode = int.Parse(rowValues[Constants.Update.ItemModeColumn]);
+                    string itemName = FormatName(rowValues[Constants.Update.ItemNameColumn]);
 
-                    // One Unity unit is not measured in pixels but in tileSizeX -> 1 unit = TileSizeX; 1px = 1/TileSizeX;
+                    int itemMode = int.Parse(rowValues[Constants.Update.ItemModeColumn]);
+                    int itemFrameCount = int.Parse(rowValues[Constants.Update.ItemFrameCountColumn]);
+
                     float baseOffsetX = int.Parse(rowValues[Constants.Update.ItemOffsetXColumn]);
                     float baseOffsetY = int.Parse(rowValues[Constants.Update.ItemOffsetYColumn]);
 
@@ -90,30 +90,25 @@ namespace Illarion.Client.Update
 
                     float height = int.Parse(rowValues[Constants.Update.ItemSurfaceLevelColumn]) / (float)Constants.Tile.SizeX;
 
-                    # endregion
-
-                    if (!itemServerIdToLocalIds.TryGetValue(serverId, out int[] localIds))
-                    {
-                        Game.Logger.Warning($"Not found any local id for server id [{serverId}] @ CreateItemBaseFile");
-                        continue;
-                    }
+                    int[] localIds = LocalIdsFromName(itemName, itemNameToLocalIds);
 
                     MapObjectBase mapObject;
                     if (itemMode == (int)Constants.ItemMode.Simple)
                     {
                         mapObject = new SimpleObjectBase(
-                            CorrectBaseOffset(baseOffsetX, baseOffsetY, localIdToOffsets, localIds[0]),
+                            localIds[0], CorrectBaseOffset(baseOffsetX, baseOffsetY, localIdToCorrectionOffsets, localIds[0]),
                             colorModRed, colorModGreen, colorModBlue, colorModAlpha,
                             scaleVariance, emittedLight, height);
                     }
                     else
                     {
-                        float[] offsetX = new float[localIds.Length];
-                        float[] offsetY = new float[localIds.Length];
+                        float[] offsetX = new float[itemFrameCount];
+                        float[] offsetY = new float[itemFrameCount];
 
-                        for (int i = 0; i < localIds.Length; i++)
+                        for (int i = 0; i < itemFrameCount; i++)
                         {
-                            var correctedOffsets = CorrectBaseOffset(baseOffsetX, baseOffsetY, localIdToOffsets, localIds[i]);
+                            var itemVarianceName = itemName + "-" + i;
+                            var correctedOffsets = CorrectBaseOffset(baseOffsetX, baseOffsetY, localIdToCorrectionOffsets, localIds[0]);
                             offsetX[i] = correctedOffsets[0];
                             offsetY[i] = correctedOffsets[1];
                         }
@@ -126,11 +121,13 @@ namespace Illarion.Client.Update
                             scaleVariance, emittedLight, height);
                     }
 
-                    foreach (var localId in localIds)
+                    if (serverIdToItemBase.ContainsKey(serverId))
                     {
-                        if (localIdToItemBase.ContainsKey(localId)) continue;   // The server item contain several duplicates which link to the same local id
-                        localIdToItemBase.Add(localId, mapObject);
+                        Debug.Log("Tried to save a single item serverId twice in the mapping file!");
+                        continue;
                     }
+
+                    serverIdToItemBase.Add(serverId, mapObject);
                 }
             }
 
@@ -139,7 +136,7 @@ namespace Illarion.Client.Update
 
             using (var file = fileInfo.Create())
             {
-                binaryFormatter.Serialize(file, localIdToItemBase);
+                binaryFormatter.Serialize(file, serverIdToItemBase);
                 file.Flush();
             }
         }
@@ -166,7 +163,7 @@ namespace Illarion.Client.Update
         *
         * This mapping will be return and saved to disk
         */
-        private Dictionary<int,int[]> CreateMapping(string tablePath, int nameColumn, int idColumn, string fileName, Dictionary<string, int> nameToIndex) {
+        private Dictionary<int,int[]> CreateMapping(string tablePath, int nameColumn, int idColumn, string fileName, Dictionary<string, int> nameToLocalId) {
             var tableFile = Resources.Load<TextAsset>(tablePath);
 
             if (tableFile == null) throw new FileNotFoundException($"Failed opening intern tile table at {tablePath}!");
@@ -182,29 +179,9 @@ namespace Illarion.Client.Update
                 if (line.StartsWith("#") || line.StartsWith("/")) continue;
 
                 string[] rowValues = line.Split(new char[] {','}, StringSplitOptions.None);
-                string name = rowValues[nameColumn].Substring(1, rowValues[nameColumn].Length - 2).Replace("/","-");
+                string name = FormatName(rowValues[nameColumn]);
 
-                int[] localIds;
-                int localId = LocalIdFromName(name, nameToIndex);
-
-                if (localId == -1)
-                {
-                    int variantId = 0;
-                    List<int> ids = new List<int>();
-                    localId = LocalIdFromName(name + "-" + variantId, nameToIndex);
-                    
-                    while (localId != -1) {
-                        ids.Add(localId);
-                        variantId++;
-                        localId = LocalIdFromName(name + "-" + variantId, nameToIndex);
-                    }
-
-                    localIds = ids.ToArray();
-                }
-                else 
-                {
-                    localIds = new int[] {localId};
-                }
+                int[] localIds = LocalIdsFromName(name, nameToLocalId);
 
                 int serverId = int.Parse(rowValues[idColumn]);
 
@@ -230,11 +207,34 @@ namespace Illarion.Client.Update
             return resultDic;
         }
 
+        private int[] LocalIdsFromName(string name, Dictionary<string, int> nameToIndex) 
+        {
+            int localId = LocalIdFromName(name, nameToIndex);
+
+            if (localId == -1)
+            {
+                int variantId = 0;
+                List<int> ids = new List<int>();
+                localId = LocalIdFromName(name + "-" + variantId, nameToIndex);
+                
+                while (localId != -1) {
+                    ids.Add(localId);
+                    variantId++;
+                    localId = LocalIdFromName(name + "-" + variantId, nameToIndex);
+                }
+
+                return ids.ToArray();
+            }
+
+            return new int[] {localId};
+        }
+
         private int LocalIdFromName(string name, Dictionary<string, int> nameToIndex)
         {
             if (!nameToIndex.ContainsKey(name)) return -1;
             else return nameToIndex[name];
         }
 
+        private string FormatName(string unformattedName) => unformattedName.Substring(1, unformattedName.Length - 2).Replace("/","-");
     }
 }

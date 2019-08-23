@@ -63,7 +63,7 @@ namespace Illarion.Client.Common
 
         public static class Scene
         {
-            public const int Map = 0;
+            public const int Map = 1;
         }
 
         public static class Map

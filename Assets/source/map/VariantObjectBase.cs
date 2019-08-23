@@ -11,7 +11,8 @@ namespace Illarion.Client.Map
         private float[] offsetY;
 
         public float AnimationSpeed {get;}
-        public bool IsAnimated { get { return AnimationSpeed != 0.0f; } }
+        public bool IsAnimated { get { return !(AnimationSpeed < 0.01f); } }
+        public int InitialId { get { return ids[0]; } } 
 
         public int GetNextId(int id)
         {

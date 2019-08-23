@@ -40,15 +40,14 @@ namespace Illarion.Client.Update
 
             var tileDictionary = tableReader.CreateTileMapping();
             var overlayDictionary = tableReader.CreateOverlayMapping();
-            var itemDictionary = tableReader.CreateItemMapping();
-            
+                        
             var offsetReader = new OffsetReader();
             var itemOffsets = offsetReader.AdaptItemOffsets(Constants.Update.ItemOffsetPath, itemNameDictionary);
-            tableReader.CreateItemBaseFile(itemDictionary, itemOffsets);
+            tableReader.CreateItemBaseFile(itemNameDictionary, itemOffsets);
 
             await new WaitForBackgroundThread();
 
-            var mapChunkBuilder = new MapChunkBuilder(tileDictionary, overlayDictionary, itemDictionary);
+            var mapChunkBuilder = new MapChunkBuilder(tileDictionary, overlayDictionary);
             mapChunkBuilder.Create();
 
             UpdateVersion(serverVersion);

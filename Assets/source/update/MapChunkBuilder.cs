@@ -13,14 +13,12 @@ namespace Illarion.Client.Update
         private Dictionary<int, List<RawMap>> worldMapInLayers;
         private Dictionary<int, int[]> baseIdToLocalId;
         private Dictionary<int, int[]> overlayIdToLocalId;
-        private Dictionary<int, int[]> itemIdToLocalId;
         private Random random;
 
-        public MapChunkBuilder(Dictionary<int,int[]> baseIdToLocalId, Dictionary<int,int[]> overlayIdToLocalId, Dictionary<int, int[]> itemIdToLocalId)
+        public MapChunkBuilder(Dictionary<int,int[]> baseIdToLocalId, Dictionary<int,int[]> overlayIdToLocalId)
         {
             this.baseIdToLocalId = baseIdToLocalId;
             this.overlayIdToLocalId = overlayIdToLocalId;
-            this.itemIdToLocalId = itemIdToLocalId;
             this.worldMapInLayers = new Dictionary<int, List<RawMap>>();
 
             this.random = new Random();
@@ -130,12 +128,6 @@ namespace Illarion.Client.Update
                             if (map.Items.ContainsKey(mapPosition))
                             {
                                 var mapItems = map.Items[mapPosition];
-                                
-                                foreach(var mapItem in mapItems)
-                                {
-                                    mapItem.ObjectId = GetItemIdFromServerItemId(mapItem.ObjectId);
-                                }
-
 								var absolutePosition = new Vector3i(ix, iy, layer);
 
 								if (usedItems.ContainsKey(absolutePosition))
@@ -201,14 +193,6 @@ namespace Illarion.Client.Update
             if (topLeftX1 > bottomRightX2 || topLeftX2 > bottomRightX1) return false;
             if (bottomRightY2 < topLeftY1 || bottomRightY1 < topLeftY2) return false;
             return true;
-        }
-
-        private int GetItemIdFromServerItemId(int serverItemId)
-        {
-            if (serverItemId == 0 || !itemIdToLocalId.ContainsKey(serverItemId)) return 0;
-            
-            int[] itemVariantIds = itemIdToLocalId[serverItemId];
-            return itemVariantIds[random.Next(itemVariantIds.Length)];
         }
 
         private int GetBaseIdFromServerBaseId(int serverBaseId)
@@ -306,7 +290,7 @@ namespace Illarion.Client.Update
                 if (!itemDic.ContainsKey(position)) itemDic.Add(position, new List<MapObject>());
 
                 MapObject item = new MapObject();
-                item.ObjectId = int.Parse(rowValues[2]);
+                item.BaseId = int.Parse(rowValues[2]);
 
                 string name = null;
                 string description = null;

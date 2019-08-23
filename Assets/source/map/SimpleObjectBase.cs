@@ -6,9 +6,11 @@ namespace Illarion.Client.Map
     public class SimpleObjectBase : MapObjectBase
     {
         public float[] Offset {get;}
+        public int SpriteId {get;}
 
-        public SimpleObjectBase(float[] offset, float red, float green, float blue, float alpha, float sizeVariance, int encodedLight, float height) : base(red, green, blue, alpha, sizeVariance, encodedLight, height)
+        public SimpleObjectBase(int spriteId, float[] offset, float red, float green, float blue, float alpha, float sizeVariance, int encodedLight, float height) : base(red, green, blue, alpha, sizeVariance, encodedLight, height)
         {
+            SpriteId = spriteId;
             Offset = offset;
         }
     }

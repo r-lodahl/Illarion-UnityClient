@@ -18,7 +18,7 @@ namespace Illarion.Client.Unity.Scene.Ingame
             var itemBaseDictionary = binaryLoader.LoadItemBaseDicitionary();
 
             tilemap = GetComponent<IsometricLayeredTilemap>();
-            chunkLoader = new ChunkLoader(354, 275, player); 
+            chunkLoader = new ChunkLoader(376, 271, player); 
 
             tilemap.RegisterItemBases(itemBaseDictionary);
             tilemap.RegisterChunkLoader(chunkLoader);

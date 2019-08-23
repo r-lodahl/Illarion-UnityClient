@@ -69,44 +69,52 @@ namespace Illarion.Client.Unity.Scene.Ingame
 
                     int layer = chunk.Layers[layerIndex];
 
-                    int zValue = (referenceLayer-layer) * 2;
+                    int xPos = x + layer * 3;
+                    int yPos = -y + layer * 3;
+                    int zDepth = (referenceLayer-layer) * 2;
 
                     if (tileId > 0) tilemap.SetTile(new Vector3Int(
-                        x - layer * 2,
-                        -y + layer * 2,
-                        zValue), tiles[tileId]);
+                        xPos,
+                        yPos,
+                        zDepth), tiles[tileId]);
                     
+                    zDepth--;
                     if (overlayId > 0) tilemap.SetTile(new Vector3Int(
-                        x - layer * 2, 
-                        -y + layer * 2,
-                        zValue - 1), tiles[overlayId]);
+                        xPos,
+                        yPos,
+                        zDepth), tiles[overlayId]);
 
                     var tilePosition = new Vector3i(x, y, layer);
                     if (chunk.Items.TryGetValue(tilePosition, out var items)) 
                     {
-                        float n = 0f;
+                        float xPosObject = (xPos-yPos) * (38f/76f) - (1f/76f);
+                        float yPosObject = (xPos+yPos) * (19f/76f) + 0.25f;
+                        float zDepthObject = zDepth - ((y-x) / 20000f) - 0.3f;
                         foreach (var item in items)
                         {
                             var spriteItem = spritePool.Get();
-                            var itemBase = itemBases[item.ObjectId];
-                            var sprite = sprites[item.ObjectId];
-
+                            var itemBase = itemBases[item.BaseId];
+                            
+                            Sprite sprite;
                             float[] offset;
                             if (itemBase is SimpleObjectBase simpleBase)
                             {
+                                sprite = sprites[simpleBase.SpriteId];
                                 offset = simpleBase.Offset;
                             }
                             else
                             {
                                 var variantBase = (VariantObjectBase) itemBase;
-                                offset = variantBase.GetOffset(item.ObjectId);
+
+                                sprite = sprites[variantBase.InitialId];
+                                offset = variantBase.GetOffset(variantBase.InitialId);
 
                                 if (variantBase.IsAnimated)
                                 {
                                     if (animationRunners.TryGetValue(variantBase, out var animationRunner)) animationRunner.RegisterAnimatedSprite(spriteItem);
                                     else 
                                     {
-                                        animationRunner = new AnimationRunner(variantBase, item.ObjectId);
+                                        animationRunner = new AnimationRunner(variantBase, variantBase.InitialId);
                                         animationRunner.RegisterAnimatedSprite(spriteItem);
                                         animationRunners.Add(variantBase, animationRunner);
                                     }
@@ -114,9 +122,9 @@ namespace Illarion.Client.Unity.Scene.Ingame
                             }
 
                             var position = new Vector3(
-                                (x + y) * (38f/76f) - (1f/76f) - sprite.bounds.extents.x + offset[0],
-                                (x - y) * (19f/76f) + 0.25f + offset[1] + dynamicChunk.GetHeightLevel(tilePosition),
-                                zValue - 1 - ((y-x) / 20000f) - 0.3f - n
+                                xPosObject - sprite.bounds.extents.x + offset[0],
+                                yPosObject + offset[1] + dynamicChunk.GetHeightLevel(tilePosition),
+                                zDepthObject
                             );
 
                             spriteItem.transform.position = position;
@@ -126,7 +134,7 @@ namespace Illarion.Client.Unity.Scene.Ingame
                             if (itemBase.Height != 0.0f) dynamicChunk.IncreaseHeightLevel(tilePosition, itemBase.Height);
                             dynamicChunk.RegisterItem(spriteItem);
 
-                            n += 0.000001f;
+                            zDepthObject -= 0.000001f;
                         }
                     }
                 }
