@@ -10,19 +10,17 @@ namespace Illarion.Client.Unity.Scene.Ingame
 {
     public class IsometricLayeredTilemap : MonoBehaviour
     {
-        [SerializeField] private Tilemap tilemap = null;
-        
+        [SerializeField] private Tilemap tilemap = null; 
         [SerializeField] private SpriteRenderer spritePrefab = null;
 
         private int referenceLayer = 0;
         private Tile[] tiles;
         private Sprite[] sprites;
         
-        private Dictionary<Chunk, DynamicChunk> loadedChunks;
-
         private SpritePool spritePool;
 
         private Dictionary<int, MapObjectBase> itemBases;
+        private Dictionary<Chunk, DynamicChunk> loadedChunks;
         private Dictionary<VariantObjectBase, AnimationRunner> animationRunners;
 
         private void Awake()
@@ -38,10 +36,7 @@ namespace Illarion.Client.Unity.Scene.Ingame
             animationRunners = new Dictionary<VariantObjectBase, AnimationRunner>();
         }
 
-        public void RegisterItemBases(Dictionary<int, MapObjectBase> itemBases)
-        {
-            this.itemBases = itemBases;
-        }
+        public void RegisterItemBases(Dictionary<int, MapObjectBase> itemBases) => this.itemBases = itemBases;
 
         public void RegisterChunkLoader(ChunkLoader chunkLoader)
         {
@@ -79,82 +74,89 @@ namespace Illarion.Client.Unity.Scene.Ingame
                         zDepth), tiles[tileId]);
                     
                     zDepth--;
+
                     if (overlayId > 0) tilemap.SetTile(new Vector3Int(
                         xPos,
                         yPos,
                         zDepth), tiles[overlayId]);
 
                     var tilePosition = new Vector3i(x, y, layer);
-                    if (chunk.Items.TryGetValue(tilePosition, out var items)) 
-                    {
-                        float xPosObject = (xPos-yPos) * (38f/76f) - (1f/76f);
-                        float yPosObject = (xPos+yPos) * (19f/76f) + 0.25f;
-                        float zDepthObject = zDepth - ((y-x) / 20000f) - 0.3f;
-                        foreach (var item in items)
-                        {
-                            var spriteItem = spritePool.Get();
-                            var itemBase = itemBases[item.BaseId];
-                            
-                            Sprite sprite;
-                            float[] offset;
-                            if (itemBase is SimpleObjectBase simpleBase)
-                            {
-                                sprite = sprites[simpleBase.SpriteId];
-                                offset = simpleBase.Offset;
-                            }
-                            else
-                            {
-                                var variantBase = (VariantObjectBase) itemBase;
 
-                                int itemId;;
-                                if (variantBase.IsAnimated)
-                                {
-                                    if (!animationRunners.TryGetValue(variantBase, out var animationRunner)) 
-                                    {
-                                        animationRunner = new AnimationRunner(variantBase, variantBase.InitialId);
-                                        animationRunners.Add(variantBase, animationRunner);
-                                    }
-
-                                    animationRunner.RegisterAnimatedSprite(spriteItem);
-
-                                    itemId = variantBase.InitialId;
-                                }
-                                else
-                                {
-                                    itemId = variantBase.GetFrameId(MapVariance.GetItemFrameVariance(x, y, variantBase.FrameCount));
-                                }
-
-                                sprite = sprites[itemId];
-                                offset = variantBase.GetOffset(itemId);
-                            }
-
-                            var position = new Vector3(
-                                xPosObject - sprite.bounds.extents.x + offset[0],
-                                yPosObject + offset[1] + dynamicChunk.GetHeightLevel(tilePosition),
-                                zDepthObject
-                            );
-
-                            spriteItem.sprite = sprite;
-                            spriteItem.transform.position = position;
-                            
-                            var scale = itemBase.SizeVariance;
-                            if (scale > 0f)
-                            {
-                                scale = MapVariance.GetItemScaleVariance(x, y, scale);
-                                spriteItem.transform.localScale = new Vector3(scale, scale, 1f);                            
-                            }
-
-                            spriteItem.gameObject.SetActive(true);
-
-                            if (itemBase.Height != 0.0f) dynamicChunk.IncreaseHeightLevel(tilePosition, itemBase.Height);
-                            dynamicChunk.RegisterItem(spriteItem);
-
-                            zDepthObject -= 0.000001f;
-                        }
-                    }
+                    if (!chunk.Items.TryGetValue(tilePosition, out var items)) continue;
+                    
+                    LoadItemStack(items, new Vector3((xPos-yPos) * (38f/76f) - (1f/76f),
+                        (xPos+yPos) * (19f/76f) + 0.25f, zDepth - ((y-x) / 20000f) - 0.3f),
+                        tilePosition, dynamicChunk);
                 }
             }
         }
+
+        private void LoadItemStack(MapObject[] items, Vector3 screenPosition, Vector3i tilePosition, DynamicChunk chunk)
+        {
+            foreach (var item in items)
+            {
+                var unitySprite = spritePool.Get();
+                var itemBase = itemBases[item.BaseId];
+                
+                Sprite sprite;
+                float[] offset;
+                if (itemBase is SimpleObjectBase simpleBase)
+                {
+                    sprite = sprites[simpleBase.SpriteId];
+                    offset = simpleBase.Offset;
+                }
+                else
+                {
+                    var variantBase = (VariantObjectBase) itemBase;
+
+                    var spriteId = SetupMultiFrameItem(variantBase, tilePosition.x, tilePosition.y, unitySprite);
+
+                    sprite = sprites[spriteId];
+                    offset = variantBase.GetOffset(spriteId);
+                }
+
+                unitySprite.sprite = sprite;
+
+                unitySprite.transform.position = new Vector3(
+                    screenPosition.x - sprite.bounds.extents.x + offset[0],
+                    screenPosition.y + offset[1] + chunk.GetHeightLevel(tilePosition),
+                    screenPosition.z
+                );
+                
+                SetupItemScale(tilePosition.x, tilePosition.y, itemBase.SizeVariance, unitySprite);
+
+                unitySprite.gameObject.SetActive(true);
+
+                if (itemBase.Height > 0f) chunk.IncreaseHeightLevel(tilePosition, itemBase.Height);
+                chunk.RegisterItem(unitySprite);
+
+                screenPosition.z -= 0.000001f;
+            }
+        }
+
+        private void SetupItemScale(int tileX, int tileY, float sizeVariance, SpriteRenderer unitySprite)
+        {
+            if (sizeVariance == 0f) return;
+
+            float scale = MapVariance.GetItemScaleVariance(tileX, tileY, sizeVariance);
+            unitySprite.transform.localScale = new Vector3(scale, scale, 1f);  
+        }
+
+        private int SetupMultiFrameItem(VariantObjectBase variantBase, int tileX, int tileY, SpriteRenderer unitySprite) 
+        {
+            if (!variantBase.IsAnimated) return variantBase.GetFrameId(MapVariance.GetItemFrameVariance(tileX, tileY, variantBase.FrameCount));
+            
+            if (!animationRunners.TryGetValue(variantBase, out var animationRunner)) 
+            {
+                animationRunner = new AnimationRunner(variantBase, variantBase.InitialId);
+                animationRunners.Add(variantBase, animationRunner);
+            }
+
+            animationRunner.RegisterAnimatedSprite(unitySprite);
+
+            return variantBase.InitialId;
+        }
+
 
         private void OnChunkUnloading(object sender, Chunk chunk)
         {
