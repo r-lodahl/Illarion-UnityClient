@@ -19,13 +19,6 @@ namespace Illarion.Client.Update
                 {
                     if (line.Equals("") || line.StartsWith("#")) continue;
 
-                    /*
-                    0: itemgraphic name
-                    1: offset 
-                    2: offset
-                    3: offset
-                    4: offset
-                    */
                     var values = line.Split(new char[] {','});
 
                     if (itemNameToLocalId.TryGetValue(values[0], out var localId))

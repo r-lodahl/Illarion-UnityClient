@@ -13,14 +13,25 @@ namespace Illarion.Client.Update
 {
     public class ClientUpdater
     {
+        /// <summary>
+        /// HttpClient instance handling the network communication for the update.
+        /// </summary>
         private HttpClient http;
 
+        /// <summary>
+        /// This class downloads the current game data from an Illarion Update Server
+        /// if the local data is outdated and converts this data to be usable by the game.
+        /// </summary>
         public ClientUpdater() {
             http = new HttpClient();
             http.MaxResponseContentBufferSize = 200000000;
             http.DefaultRequestHeaders.Add("user-agent", "Unity/2019 (illarion)");
         }
 
+        /// <summary>
+        /// Updates the gamedata to the newest data available online and converts it.
+        /// </summary>
+        /// <returns>true if update not needed or successfull, else false</returns>
         public async Task<bool> Update() 
         {
             string localVersion = GetLocalVersion();
@@ -57,6 +68,10 @@ namespace Illarion.Client.Update
             return true;
         }
 
+        /// <summary>
+        /// Gets the current version of gamedata.
+        /// </summary>
+        /// <returns>the local game version</returns>
         private string GetLocalVersion()
         {
             string versionPath = string.Concat(
@@ -68,6 +83,10 @@ namespace Illarion.Client.Update
             return File.ReadAllText(versionPath);
         }
 
+        /// <summary>
+        /// Gets the newest online version of the gamedata.
+        /// </summary>
+        /// <returns>the server game version</returns>
         private async Task<string> GetServerVersion()
         {
             HttpResponseMessage response = await http.GetAsync(string.Concat(
@@ -88,6 +107,10 @@ namespace Illarion.Client.Update
             return "";
         }
 
+        /// <summary>
+        /// Downloads the newest gamedata available online.
+        /// </summary>
+        /// <returns>true if the download was successfull, else false.</returns>
         private async Task<bool> DownloadMapFiles()
         {
             HttpResponseMessage response = await http.GetAsync(string.Concat(
@@ -108,35 +131,55 @@ namespace Illarion.Client.Update
             return true;
         }
 
+        /// <summary>
+        /// Creates a dictionary that has the local tile image names as keys
+        /// and their index in the sprite array as value. 
+        /// </summary>
+        /// <returns>The dictionary</returns>
         private Dictionary<string, int> GetTileNameDictionary() 
         {
             var tiles = Resources.LoadAll<Tile>(Constants.UserData.TilesetPath);
             return GetNameDictionary(tiles);
         }
 
+        /// <summary>
+        /// Creates a dictionary that has the local item image names as keys
+        /// and their index in the sprite array as value. 
+        /// </summary>
+        /// <returns>The dictionary</returns>
         private Dictionary<string, int> GetItemNameDictionary()
         {
             Sprite[] items = Resources.LoadAll<Sprite>(Constants.UserData.ItemsetPath);
             return GetNameDictionary(items);
         }
 
+        /// <summary>
+        /// For a given object array, a function will be created with the object names
+        /// as keys and their array index as value.
+        /// </summary>
+        /// <param name="objects">The named object array</param>
+        /// <returns>The name to index dictionary</returns>
         private Dictionary<string, int> GetNameDictionary(UnityEngine.Object[] objects)
         {
             var nameToIndex = new Dictionary<string, int>(objects.Length);
 
-            for (int i = 0; i < objects.Length; i++)
-            {
-                nameToIndex.Add(objects[i].name, i);
-            }
-
+            for (int i = 0; i < objects.Length; i++) nameToIndex.Add(objects[i].name, i);
+            
             return nameToIndex;
         }
 
+        /// <summary>
+        /// Updates the game version saved in the gamedata to the given version.
+        /// </summary>
+        /// <param name="version">The new version</param>
         private void UpdateVersion(string version)
         {
             File.WriteAllText(String.Concat(Game.FileSystem.UserDirectory, Constants.UserData.VersionPath), version);
         }
 
+        /// <summary>
+        /// Removes the current map chunks from the gamedata.
+        /// </summary>
         private void ClearMapFolder()
         {
             string mapDataPath = String.Concat(Game.FileSystem.UserDirectory, Constants.UserData.MapPath);
@@ -146,6 +189,9 @@ namespace Illarion.Client.Update
             Directory.CreateDirectory(mapDataPath);
         }
 
+        /// <summary>
+        /// Removes the folder containing the unconverted map data.
+        /// </summary>
         private void RemoveDownloadFolder()
         {
             Directory.Delete(String.Concat(Game.FileSystem.UserDirectory, Constants.UserData.ServerMapPath), true);
