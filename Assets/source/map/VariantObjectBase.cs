@@ -12,7 +12,19 @@ namespace Illarion.Client.Map
 
         public float AnimationSpeed {get;}
         public bool IsAnimated { get { return !(AnimationSpeed < 0.01f); } }
-        public int InitialId { get { return ids[0]; } } 
+        public int InitialId { get { return ids[0]; } }
+        public int FrameCount { get { return ids.Length; } } 
+
+        public int GetFrameId(int frame)
+        {
+            if (frame < 0 || frame > ids.Length)
+            {
+                Game.Logger.Debug($"Requested item frame, but frame number is out of bounds: {frame}");
+                return 0;
+            }
+
+            return ids[frame];
+        }
 
         public int GetNextId(int id)
         {

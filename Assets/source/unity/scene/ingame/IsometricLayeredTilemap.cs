@@ -106,19 +106,26 @@ namespace Illarion.Client.Unity.Scene.Ingame
                             {
                                 var variantBase = (VariantObjectBase) itemBase;
 
-                                sprite = sprites[variantBase.InitialId];
-                                offset = variantBase.GetOffset(variantBase.InitialId);
-
+                                int itemId;;
                                 if (variantBase.IsAnimated)
                                 {
-                                    if (animationRunners.TryGetValue(variantBase, out var animationRunner)) animationRunner.RegisterAnimatedSprite(spriteItem);
-                                    else 
+                                    if (!animationRunners.TryGetValue(variantBase, out var animationRunner)) 
                                     {
                                         animationRunner = new AnimationRunner(variantBase, variantBase.InitialId);
-                                        animationRunner.RegisterAnimatedSprite(spriteItem);
                                         animationRunners.Add(variantBase, animationRunner);
                                     }
+
+                                    animationRunner.RegisterAnimatedSprite(spriteItem);
+
+                                    itemId = variantBase.InitialId;
                                 }
+                                else
+                                {
+                                    itemId = variantBase.GetFrameId(MapVariance.GetItemFrameVariance(x, y, variantBase.FrameCount));
+                                }
+
+                                sprite = sprites[itemId];
+                                offset = variantBase.GetOffset(itemId);
                             }
 
                             var position = new Vector3(
@@ -127,8 +134,16 @@ namespace Illarion.Client.Unity.Scene.Ingame
                                 zDepthObject
                             );
 
-                            spriteItem.transform.position = position;
                             spriteItem.sprite = sprite;
+                            spriteItem.transform.position = position;
+                            
+                            var scale = itemBase.SizeVariance;
+                            if (scale > 0f)
+                            {
+                                scale = MapVariance.GetItemScaleVariance(x, y, scale);
+                                spriteItem.transform.localScale = new Vector3(scale, scale, 1f);                            
+                            }
+
                             spriteItem.gameObject.SetActive(true);
 
                             if (itemBase.Height != 0.0f) dynamicChunk.IncreaseHeightLevel(tilePosition, itemBase.Height);

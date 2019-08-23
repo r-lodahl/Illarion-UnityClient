@@ -19,8 +19,6 @@ namespace Illarion.Client.Unity.Map
             registeredSprites = new List<SpriteRenderer>();
             currentId = animationId;
             animationInfo = animationBase;
-
-            Debug.Log($"Registered animation with speed of {animationInfo.AnimationSpeed}");
         }
 
         public void RegisterAnimatedSprite(SpriteRenderer sprite)
