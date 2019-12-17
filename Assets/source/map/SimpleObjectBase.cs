@@ -2,6 +2,9 @@ using System;
 
 namespace Illarion.Client.Map
 {
+    /// <summary>
+    /// Object base for map object that only have an offset and id
+    /// </summary>
     [Serializable]
     public class SimpleObjectBase : MapObjectBase
     {

@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace Illarion.Client.Unity.Scene.Ingame
 {
+    /// <summary>
+    /// Main unity connection for the map scene
+    /// </summary>
     public class IngameManager : MonoBehaviour
     {
         [SerializeField] private Player player = null;
@@ -11,6 +14,11 @@ namespace Illarion.Client.Unity.Scene.Ingame
         private ChunkLoader chunkLoader;
         private IsometricLayeredTilemap tilemap;
 
+        /// <summary>
+        /// Initializes objects for data loading: BinaryLoader, ChunkLoader
+        /// Loads initial chunks
+        /// Connects chunkLoader and tilemap
+        /// </summary>
         private void Start()
         {
             var binaryLoader = new BinaryLoader();

@@ -7,6 +7,9 @@ using Illarion.Client.Common;
 
 namespace Illarion.Client.Map
 {
+	/// <summary>
+	/// Handles the loading and unloading of game data chunks
+	/// </summary>
 	public class ChunkLoader
 	{
         public event EventHandler<Chunk> ChunkLoaded;
@@ -49,11 +52,19 @@ namespace Illarion.Client.Map
 			binaryFormatter = new BinaryFormatter();
 		}
 
+		/// <summary>
+		/// Reloads all chunks
+		/// </summary>
 		public void ReloadChunks()
 		{
 			ReloadChunks(new int[]{0,1,2,3,4,5,6,7,8});
 		}
 
+		/// <summary>
+		/// Trigger the unloading event for all chunks unloaded by the given chunk movement
+		/// </summary>
+		/// <param name="chunkMoveX">X Chunk Movement</param>
+		/// <param name="chunkMoveY">Y Chunk Movement</param>
 		private void NotifyUnloading(int chunkMoveX, int chunkMoveY)
 		{
 			HashSet<int> unloadedChunkIds = new HashSet<int>();
@@ -67,6 +78,13 @@ namespace Illarion.Client.Map
 			foreach (int chunkId in unloadedChunkIds) OnChunkUnloading(activeChunks[chunkId]);
 		}
 
+		/// <summary>
+		/// Moves chunks that will not be unloaded by the given chunk movement to 
+		/// their new position in the chunk array
+		/// </summary>
+		/// <param name="chunkMoveX">Chunk X Movement</param>
+		/// <param name="chunkMoveY">Chunk Y Movement</param>
+		/// <returns>ChunkIds that need reloading</returns>
 		private IEnumerable<int> ShiftChunks(int chunkMoveX, int chunkMoveY)
 		{
 			HashSet<int> reloadChunkIds = new HashSet<int>();
@@ -116,6 +134,13 @@ namespace Illarion.Client.Map
 			return reloadChunkIds;
 		}
 
+		/// <summary>
+		/// Function to be triggered if map center is moved
+		/// Will detect if a chunk movement is present and handle 
+		/// it by unloading, shifting and reloading chunks
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="movement"></param>
 		private void OnMovementDone(object sender, Vector2i movement)
 		{
 			x += movement.x;
@@ -137,6 +162,10 @@ namespace Illarion.Client.Map
 			ReloadChunks(ShiftChunks(chunkMoveX, chunkMoveY));
 		}
 
+		/// <summary>
+		/// Reloads chunks for the given ids
+		/// </summary>
+		/// <param name="chunkList">the list of chunk ids to be reloaded</param>
 		private void ReloadChunks(IEnumerable<int> chunkList) 
 		{
 			foreach (int chunkId in chunkList)
@@ -146,6 +175,11 @@ namespace Illarion.Client.Map
 			}
 		}
 		
+		/// <summary>
+		/// Loads a binary chunk file from disk
+		/// </summary>
+		/// <param name="chunkId">the id of the chunk to be loaded</param>
+		/// <returns></returns>
 		private Chunk LoadChunk(int chunkId) 
 		{
 			string chunkPath = String.Concat(

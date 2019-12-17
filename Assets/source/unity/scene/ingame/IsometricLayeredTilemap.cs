@@ -8,6 +8,9 @@ using Illarion.Client.Map;
 
 namespace Illarion.Client.Unity.Scene.Ingame
 {
+    /// <summary>
+    /// Manager for determine which game data is currently displayed on the unity tilemap object
+    /// </summary>
     public class IsometricLayeredTilemap : MonoBehaviour
     {
         [SerializeField] private Tilemap tilemap = null; 
@@ -44,6 +47,14 @@ namespace Illarion.Client.Unity.Scene.Ingame
             chunkLoader.ChunkUnloading += OnChunkUnloading;
         }
 
+        /// <summary>
+        /// If a new chunk was loaded (and the chunk contains acutal data) this chunk
+        /// will be embedded into a new dynamic chunk. After this, for all relevant layers,
+        /// there tiles and items will be loaded and set to be displayed. For all elements
+        /// zDepth will be calculated relative to the current reference layer.
+        /// </summary>
+        /// <param name="sender">the object that informed about the event</param>
+        /// <param name="chunk">the new chunk that was loaded</param>
         private void OnChunkLoaded(object sender, Chunk chunk)
         {
             if (chunk == null) return;
@@ -91,6 +102,15 @@ namespace Illarion.Client.Unity.Scene.Ingame
             }
         }
 
+        /// <summary>
+        /// Loads an array of items to be displayed.
+        /// Will apply offset, initialize animated or variant items,
+        /// scale and height-level. Loaded items will be in the order of the array.
+        /// </summary>
+        /// <param name="items">The array of items</param>
+        /// <param name="screenPosition">The origin screenposition to display the items</param>
+        /// <param name="tilePosition">The corresponding tileposition to the screenpostion</param>
+        /// <param name="chunk">The dynamic chunk in charge of the item sprites</param>
         private void LoadItemStack(MapObject[] items, Vector3 screenPosition, Vector3i tilePosition, DynamicChunk chunk)
         {
             foreach (var item in items)
@@ -134,6 +154,13 @@ namespace Illarion.Client.Unity.Scene.Ingame
             }
         }
 
+        /// <summary>
+        /// Changes item scale if item has size variance
+        /// </summary>
+        /// <param name="tileX">X Position of the item</param>
+        /// <param name="tileY">Y Position of the item</param>
+        /// <param name="sizeVariance">Allowed size variance of the item</param>
+        /// <param name="unitySprite">Sprite which size will be changed</param>
         private void SetupItemScale(int tileX, int tileY, float sizeVariance, SpriteRenderer unitySprite)
         {
             if (sizeVariance == 0f) return;
@@ -142,6 +169,15 @@ namespace Illarion.Client.Unity.Scene.Ingame
             unitySprite.transform.localScale = new Vector3(scale, scale, 1f);  
         }
 
+        /// <summary>
+        /// Gets item a random frame id if item is a multiframe item
+        /// Registers an animation runnter for the item, if it is animated
+        /// </summary>
+        /// <param name="variantBase">The base item of the specific item</param>
+        /// <param name="tileX">X Position of the item</param>
+        /// <param name="tileY">Y Position of the item</param>
+        /// <param name="unitySprite">Sprite which is animated or multiframed</param>
+        /// <returns>Current frame id to be used by the sprite</returns>
         private int SetupMultiFrameItem(VariantObjectBase variantBase, int tileX, int tileY, SpriteRenderer unitySprite) 
         {
             if (!variantBase.IsAnimated) return variantBase.GetFrameId(MapVariance.GetItemFrameVariance(tileX, tileY, variantBase.FrameCount));
@@ -157,7 +193,13 @@ namespace Illarion.Client.Unity.Scene.Ingame
             return variantBase.InitialId;
         }
 
-
+        // TODO: Remove dynamic chunk aswell, release loaded sprites as well
+        /// <summary>
+        /// If a chunk unloads (and the chunk contains data) all tiles will be cleared,
+        /// chunk data will be unloaded and removed
+        /// </summary>
+        /// <param name="sender">the object that fired the event</param>
+        /// <param name="chunk">the chunk that will be unloaded</param>
         private void OnChunkUnloading(object sender, Chunk chunk)
         {
             if (chunk == null) return;
@@ -187,6 +229,13 @@ namespace Illarion.Client.Unity.Scene.Ingame
             loadedChunks.Remove(chunk);
         }
 
+        /// <summary>
+        /// Gets all relevant layers for the current rendering.
+        /// A layer is relevant that is visible (referenceLayer +- Constants.Map.VisibleLayers) and
+        /// that is at least contained in one of the currently loaded chunks
+        /// </summary>
+        /// <param name="chunkLayers">Ordered layers available in the current chunks</param>
+        /// <returns></returns>
         private int[] GetApplicableLayerIndices(int[] chunkLayers) 
         {
             List<int> usedLayersIndices = new List<int>(20);

@@ -6,6 +6,9 @@ using Illarion.Client.Map;
 
 namespace Illarion.Client.Unity.Map
 {
+    /// <summary>
+    /// Helper class to deserialize binary data during game time
+    /// </summary>
     public class BinaryLoader
     {
         public Dictionary<int, MapObjectBase> LoadItemBaseDicitionary()

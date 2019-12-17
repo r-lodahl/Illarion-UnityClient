@@ -2,6 +2,9 @@ using System;
 
 namespace Illarion.Client.Common
 {
+    /// <summary>
+    /// Static game class allowing easy access to major game components
+    /// </summary>
     public static class Game 
     {
         private static bool _initialized;

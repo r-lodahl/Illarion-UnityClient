@@ -2,6 +2,9 @@ using System;
 
 namespace Illarion.Client.Map
 {
+    /// <summary>
+    /// Data class for lighting game data
+    /// </summary>
     [Serializable]
     public class Light 
     {

@@ -2,6 +2,9 @@ using System;
 
 namespace Illarion.Client.Map
 {
+    /// <summary>
+    /// Represents a single object on the map
+    /// </summary>
     [Serializable]
     public struct MapObject
     {

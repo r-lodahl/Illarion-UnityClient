@@ -2,6 +2,9 @@ using System;
 
 namespace Illarion.Client.Common
 {
+    /// <summary>
+    /// Original functions to determine item and tile variances and item scales
+    /// </summary>
     public static class MapVariance
     {
         private static BasicRandom random = new BasicRandom();

@@ -4,6 +4,9 @@ using Illarion.Client.Map;
 
 namespace Illarion.Client.Unity.Map
 {
+    /// <summary>
+    /// Runs an animation for one specific VariantBaseObject
+    /// </summary>
     public class AnimationRunner
     {
         public static Sprite[] ItemSprites {get;set;}

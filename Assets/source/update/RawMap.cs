@@ -4,6 +4,9 @@ using Illarion.Client.Common;
 
 namespace Illarion.Client.Update
 {
+    /// <summary>
+    /// Data class for the illarion game maps
+    /// </summary>
     public class RawMap
     {
         public int Layer {get;set;}

@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace Illarion.Client.Unity.Common
 {
+    /// <summary>
+    /// Concurrent sprite object pool
+    /// </summary>
     public class SpritePool
     {
         private SpriteRenderer _spritePrefab;

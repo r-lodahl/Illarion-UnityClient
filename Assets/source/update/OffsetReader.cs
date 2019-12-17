@@ -7,6 +7,12 @@ namespace Illarion.Client.Update
 {
     public class OffsetReader
     {
+        /// <summary>
+        /// Parses the local item offsets from file
+        /// </summary>
+        /// <param name="offsetFilePath">the local item offset file</param>
+        /// <param name="itemNameToLocalId">the mapping of item name to local id</param>
+        /// <returns>a dictionary containing for each item id its local offsets</returns>
         public Dictionary<int, int[]> AdaptItemOffsets(string offsetFilePath, Dictionary<string, int> itemNameToLocalId)
         {
             Dictionary<int, int[]> localIdToOffset = new Dictionary<int, int[]>(itemNameToLocalId.Count);

@@ -2,6 +2,10 @@ using System;
 
 namespace Illarion.Client.Map
 {
+    /// <summary>
+    /// Data class for all map objects with the same object id 
+    /// Contains shared properties
+    /// </summary>
     [Serializable]
     public class MapObjectBase
     {

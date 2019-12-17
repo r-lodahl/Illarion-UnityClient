@@ -5,6 +5,10 @@ using Illarion.Client.Unity.Common;
 
 namespace Illarion.Client.Unity.Map
 {
+    /// <summary>
+    /// Runtime part of each chunk
+    /// Contains all attached sprite renderers and current height levels for tile positions 
+    /// </summary>
     public class DynamicChunk
     {
         private List<SpriteRenderer> loadedItems;

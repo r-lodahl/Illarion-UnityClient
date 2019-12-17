@@ -2,6 +2,9 @@ using System;
 
 namespace Illarion.Client.Common
 {
+    /// <summary>
+    /// Integer based Vector3 class
+    /// </summary>
     [Serializable]
     public struct Vector3i
     {

@@ -24,15 +24,16 @@ namespace Illarion.Client.Update
             this.random = new Random();
         }
 
-        /* Using the given Mapping Dictionaries this function will
-        * split the Mapfiles provided in the Server Map File Format
-        * into Binary Map Files using directly the Tileset Tile and
-        * Overlay Ids. The Map Files will be equally sized Chunks of 
-        * the complete Map. These Chunks are better to stream while
-        * gameplay and do not need too much resources on the disk.
-        *
-        * This function will save each chunk to the user disk.
-        */
+        /// <summary>
+        /// Using the given Mapping Dictionaries this function will
+        /// split the Mapfiles provided in the Server Map File Format
+        /// into Binary Map Files using directly the Tileset Tile and
+        /// Overlay Ids. The Map Files will be equally sized Chunks of 
+        /// the complete Map. These Chunks are better to stream while
+        /// gameplay and do not need too much resources on the disk.
+        ///
+        /// This function will save each chunk to the user disk.
+        /// </summary>
         public void Create() 
         {
             string[] mapFiles = System.IO.Directory.GetFiles(
@@ -71,6 +72,11 @@ namespace Illarion.Client.Update
             }
         }
 
+        /// <summary>
+        /// Creates a single chunk starting from the given base coordinates
+        /// </summary>
+        /// <param name="baseX">x base coordinate</param>
+        /// <param name="baseY">y base coordinate</param>
         private void CreateSingleChunk(int baseX, int baseY)
         {
             List<int> usedLayers = new List<int>();
@@ -79,7 +85,8 @@ namespace Illarion.Client.Update
             Dictionary<Vector3i, Vector3i> usedWarps = new Dictionary<Vector3i, Vector3i>();
 
             
-
+            // Gets all relevant tile maps for this chunk by checking if the overlap with (on any z) with the chunk
+            // Saves the usedMaps and the layers used in those maps: usedLayers
             foreach (var layerMaps in worldMapInLayers) 
             {
                 foreach (var singleMap in layerMaps.Value)
@@ -96,12 +103,23 @@ namespace Illarion.Client.Update
                 }
             }
 
+            // Empty chunks will be ignored (= null)
             if (usedLayers.Count == 0) return;
             
             usedLayers.Sort();
 
             int[][] chunkMapData = new int[Constants.Map.Chunksize*Constants.Map.Chunksize][];
 
+            // For every coordinate in the chunk (first two loops), go through every layer that we use
+            // (third loop) and every map that we use (forth loop):
+            // Directly continue if layer not in map or coordinates not in map
+            // Otherwise:
+            // Get the tile id of the position (layerValue)
+            // Get items and warps (if any) of the position
+            // After all maps were looped through: layerValue should be 0 (default) or any other positive value
+            // Get local overlay and base tile id from layerValue and repack them to a compact value //TODO: Save both variables directly
+            // Add the layerValue to the map-array for this layer
+            // After all layer were looped through: Add map-array for the layer to the mapchunkdata array of arrays
             for (int ix = baseX; ix < baseX + Constants.Map.Chunksize; ix++)
             {
                 for (int iy = baseY; iy < baseY + Constants.Map.Chunksize; iy++)
@@ -176,6 +194,7 @@ namespace Illarion.Client.Update
                 }
             }
 
+            // Create the chunk using the mapchunkdata-array, the items and the warps; save the chunk as binary to disk
             Chunk chunk = new Chunk(chunkMapData, usedLayers.ToArray(), new int[]{baseX,baseY}, usedItems, usedWarps);
 
             BinaryFormatter binaryFormatter = new BinaryFormatter();
@@ -188,6 +207,18 @@ namespace Illarion.Client.Update
             }
         }
 
+        /// <summary>
+        /// Checks if two rects overlap
+        /// </summary>
+        /// <param name="topLeftX1">Top Left x of rect 1</param>
+        /// <param name="topLeftY1">Top Left y of rect 2</param>
+        /// <param name="bottomRightX1">Bottom Right x of rect 1</param>
+        /// <param name="bottomRightY1">Bottom Right y of rect 1</param>
+        /// <param name="topLeftX2">Top Left x of rect 2</param>
+        /// <param name="topLeftY2">Top Left y of rect 2</param>
+        /// <param name="bottomRightX2">Bottom Right x of rect 2</param>
+        /// <param name="bottomRightY2">Bottom Right y of rect 2</param>
+        /// <returns></returns>
         private bool CheckOverlap(int topLeftX1, int topLeftY1, int bottomRightX1, int bottomRightY1, int topLeftX2, int topLeftY2, int bottomRightX2, int bottomRightY2) 
         {
             if (topLeftX1 > bottomRightX2 || topLeftX2 > bottomRightX1) return false;
@@ -195,6 +226,11 @@ namespace Illarion.Client.Update
             return true;
         }
 
+        /// <summary>
+        /// Gets the local tile base id from the server base id
+        /// </summary>
+        /// <param name="serverBaseId">the server base id</param>
+        /// <returns></returns>
         private int GetBaseIdFromServerBaseId(int serverBaseId)
         {
             if (serverBaseId == 0 || !baseIdToLocalId.ContainsKey(serverBaseId)) return 0;
@@ -203,12 +239,24 @@ namespace Illarion.Client.Update
             return tileVariantIds[random.Next(tileVariantIds.Length)];
         }
 
+        /// <summary>
+        /// Gets the local overlay id from the server overlay ids
+        /// </summary>
+        /// <param name="serverOverlayId">the server overlay id</param>
+        /// <param name="serverOverlayShapeId">the server overlay shape id</param>
+        /// <returns></returns>
         private int GetOverlayIdFromServerOverlayId(int serverOverlayId, int serverOverlayShapeId)
         {
             if (serverOverlayId == 0 || !overlayIdToLocalId.ContainsKey(serverOverlayId*Constants.Tile.OverlayFactor)) return 0;
             return overlayIdToLocalId[serverOverlayId*Constants.Tile.OverlayFactor][serverOverlayShapeId-1];
         }
 
+        /// <summary>
+        /// Gets the server base id, overlay id and overlay shape id from
+        /// the serialized server tile id
+        /// </summary>
+        /// <param name="serializedServerIds">the serialized server ids</param>
+        /// <returns>the unserialized server ids</returns>
         private int[] DeserializeServerIds(int serializedServerIds) 
         {
             if ((serializedServerIds & Constants.Tile.ShapeIdMask) == 0) 
@@ -219,6 +267,11 @@ namespace Illarion.Client.Update
                 (serializedServerIds & Constants.Tile.ShapeIdMask) >> 10};
         }
 
+        /// <summary>
+        /// Loads a single illarion map file
+        /// </summary>
+        /// <param name="mapFile">the path of the illarion map file</param>
+        /// <returns>the map file as data class</returns>
         private RawMap LoadSingleMap(string mapFile)
         {
             StreamReader fileReader = new StreamReader(mapFile);
@@ -228,6 +281,8 @@ namespace Illarion.Client.Update
             bool read = true;
             RawMap map = new RawMap();
 
+            // Get the map metadata:
+            // Origin (x/y), Layer, Width, Height
             while (read && (next = fileReader.Peek()) != -1) 
             {
                 switch (next)
@@ -266,6 +321,7 @@ namespace Illarion.Client.Update
 
             map.MapArray = new int[map.Width, map.Height];
 
+            // Get the compressed tile ids from the map data file
             while ((line = fileReader.ReadLine()) != null) 
             {
                 string[] rowValues = line.Split((new string[]{";"}), StringSplitOptions.RemoveEmptyEntries);
@@ -274,6 +330,7 @@ namespace Illarion.Client.Update
 
             fileReader.Close();
             
+            // Get the corresponding item data file and transform them into MapObjects
             string itemPath = String.Concat(mapFile.Substring(0, mapFile.Length - 9), "items.txt");
             if (!File.Exists(itemPath)) throw new FileNotFoundException($"{itemPath} not found!");
             fileReader = new StreamReader(itemPath);
@@ -317,6 +374,7 @@ namespace Illarion.Client.Update
             foreach(var item in itemDic) arrayItemDic.Add(item.Key, item.Value.ToArray());
             map.Items = arrayItemDic;    
 
+            // Get the corresponding warp data file and transform them into Vector3i
             string warpPath = String.Concat(mapFile.Substring(0, mapFile.Length - 9), "warps.txt");
             if (!File.Exists(warpPath)) throw new FileNotFoundException($"{warpPath} not found!");
             fileReader = new StreamReader(warpPath); 

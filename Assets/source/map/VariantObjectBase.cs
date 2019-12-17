@@ -3,6 +3,9 @@ using Illarion.Client.Common;
 
 namespace Illarion.Client.Map
 {
+    /// <summary>
+    /// Object base for map objects that have multiple frames and possibly an animation
+    /// </summary>
     [Serializable]
     public class VariantObjectBase : MapObjectBase
     {

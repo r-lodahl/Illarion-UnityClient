@@ -10,6 +10,13 @@ using Logger = Illarion.Client.Unity.Common.Logger;
 
 namespace Illarion.Client.Unity.Scene.Update
 {
+    /// <summary>
+    /// Called by Unity
+    /// 
+    /// Initializes the Game singleton
+    /// Triggers the updating
+    /// Opens the map scene
+    /// </summary>
     public class UpdateManager : MonoBehaviour
     {
         private ClientUpdater updater;
@@ -39,6 +46,13 @@ namespace Illarion.Client.Unity.Scene.Update
             }
         }
 
+        /// <summary>
+        /// Basic async task for updating the game
+        /// The function will retry if it fails
+        /// </summary>
+        /// <param name="attempt">The current number of attempts to update the game</param>
+        /// <param name="maxAttempt">The maximal allowed number of attempts to update the game</param>
+        /// <returns>true if the game was succesfully updated, false otherwise</returns>
         private async Task<bool> MapUpdate(int attempt, int maxAttempt)
         {
             if (await updater.Update()) return true;

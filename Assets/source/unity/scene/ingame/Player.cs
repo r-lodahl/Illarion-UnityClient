@@ -4,6 +4,9 @@ using Illarion.Client.Common;
 
 namespace Illarion.Client.Unity.Scene.Ingame
 {
+    /// <summary>
+    /// Player stub to allow movement over the map
+    /// </summary>
     public class Player : MonoBehaviour, IMovementSupplier
     {
         public event EventHandler<Vector2i> MovementDone;
