@@ -1,6 +1,21 @@
 version: 2
 importPivots: 1
 tpsheetFileNames:
+- Assets/Resources/chars/chars-1.tpsheet
+- Assets/Resources/chars/chars-2.tpsheet
+- Assets/Resources/chars/chars-3.tpsheet
+- Assets/Resources/chars/chars-4.tpsheet
+- Assets/Resources/items/items.tpsheet
 textureFileNames:
+- Assets/Resources/chars/chars-1.png
+- Assets/Resources/chars/chars-2.png
+- Assets/Resources/chars/chars-3.png
+- Assets/Resources/chars/chars-4.png
+- Assets/Resources/items/items.png
 normalmapFileNames:
+- 
+- 
+- 
+- 
+- 
 enableDebugOutput: 0
